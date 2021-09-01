@@ -1,5 +1,12 @@
 import React from "react";
-import { AppBar, makeStyles } from "@material-ui/core";
+import {
+  AppBar,
+  IconButton,
+  makeStyles,
+  Menu,
+  MenuItem,
+} from "@material-ui/core";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import { useAppDispatch, useAppSelector } from "../../Hooks/Hook";
@@ -76,11 +83,34 @@ export default function NavSub() {
     });
   };
 
+  // xử lý khi click vào icon user
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <AppBar position="static" className={classes.header}>
       <div className={classes.toolbar}>
         {token && isLogin ? (
           <>
+            <IconButton onClick={handleClick}>
+              <AccountCircleIcon style={{ cursor: "pointer" }} />
+            </IconButton>
+
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>Edit profile</MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem>
+            </Menu>
             <span className={classes.greeting}>Hello, {userInfo.username}</span>
             <span
               className={classes.navListFeature}

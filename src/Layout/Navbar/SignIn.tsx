@@ -3,6 +3,7 @@ import { Dialog, IconButton, makeStyles } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
+import GoogleLogin from "react-google-login";
 import { TransitionProps } from "@material-ui/core/transitions";
 import userService from "../../Service/UserService";
 import { useAppDispatch } from "../../Hooks/Hook";
@@ -14,6 +15,7 @@ import {
 import { USER_ROLE } from "../../Config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { STATUS } from "../../Config/statusCode";
 
 const useStyles = makeStyles((theme) => ({
   navListFeature: {
@@ -181,6 +183,16 @@ export default function SignIn() {
     formState: { errors },
     reset,
   } = useForm<FormSignInValues>();
+
+  const responseGoogle = async (response: any) => {
+    // console.log(response.tokenId);
+    const user = await userService.loginGoogle(response.tokenId);
+
+    if (user.data.statusCode === STATUS.REDIRECT) {
+      alert("hello chó hiếu");
+    }
+    console.log(user);
+  };
 
   const onSubmitSignIn = async (data: any) => {
     try {

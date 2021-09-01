@@ -22,6 +22,10 @@ class UserService {
   signUp = (user: SignUp) => {
     return API("user", "POST", user, "");
   };
+
+  loginGoogle = (token: any) => {
+    return API(`google/${token}`, "GET", "", "");
+  };
 }
 const userService = new UserService();
 export default userService;
