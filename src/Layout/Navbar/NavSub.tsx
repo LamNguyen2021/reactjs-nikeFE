@@ -9,6 +9,8 @@ import {
   setToken,
   setUserInfo,
 } from "../../Redux/credentials/credentialsReducer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,6 +69,11 @@ export default function NavSub() {
     dispatch(setIsLogin(false));
     dispatch(setToken(""));
     dispatch(setUserInfo({}));
+
+    toast.dark("GOOD BYE 😭", {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 2500,
+    });
   };
 
   return (
@@ -90,6 +97,7 @@ export default function NavSub() {
           </>
         )}
       </div>
+      <ToastContainer />
     </AppBar>
   );
 }
