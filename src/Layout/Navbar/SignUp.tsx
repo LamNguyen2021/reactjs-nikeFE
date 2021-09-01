@@ -179,14 +179,22 @@ export default function SignUp() {
   } = useForm<FormSignUpValues>();
 
   const onSubmitSignUp = async (data: any) => {
-    const user = await userService.signUp({
-      ...data,
-      statusId: "610bf10cdccf125e487e1b4b",
-      roleId: "60f32404d29b52428cff51f4",
-    });
+    try {
+      const user = await userService.signUp({
+        ...data,
+        yearOfBirth: parseInt(data.yearOfBirth),
+        statusId: "610bf10cdccf125e487e1b4b",
+        roleId: "60f32404d29b52428cff51f4",
+      });
 
-    reset();
-    handleClose();
+      alert("Sign up successfully");
+
+      reset();
+      handleClose();
+    } catch (err) {
+      const error = { ...err };
+      alert(error.response.data.message);
+    }
   };
 
   return (

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
+import Alert from "@material-ui/lab/Alert";
 import userService from "../../Service/UserService";
 import { useAppDispatch } from "../../Hooks/Hook";
 import {
@@ -194,8 +195,14 @@ export default function SignIn() {
       dispatch(setToken(user.data.access_token));
       dispatch(setUserInfo(user.data.info));
       dispatch(setIsLogin(true));
+
+      alert("Sign in successfully");
+
+      reset();
+      handleClose();
     } catch (err) {
-      console.log("sign in", err);
+      const error = { ...err };
+      alert(error.response.data.message);
     }
 
     reset();
