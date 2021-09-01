@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import Alert from "@material-ui/lab/Alert";
 import userService from "../../Service/UserService";
 import { useAppDispatch } from "../../Hooks/Hook";
 import {
@@ -12,6 +11,7 @@ import {
   setToken,
   setUserInfo,
 } from "../../Redux/credentials/credentialsReducer";
+import { USER_ROLE } from "../../Config";
 
 const useStyles = makeStyles((theme) => ({
   navListFeature: {
@@ -186,9 +186,9 @@ export default function SignIn() {
 
       localStorage.setItem("accessToken", user.data.access_token);
 
-      if (user.data.info.role === "Admin") {
+      if (user.data.info.role === USER_ROLE.ADMIN) {
         localStorage.setItem("admin", user.data.info);
-      } else if (user.data.info.role === "User") {
+      } else if (user.data.info.role === USER_ROLE.USER) {
         localStorage.setItem("user", JSON.stringify(user.data.info));
       }
 
