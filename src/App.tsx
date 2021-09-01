@@ -1,29 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Switch, BrowserRouter } from "react-router-dom";
 import { Page } from "./Model/IPage";
 import HomeTemplate from "./template/HomeTemplate";
 import { routesAdmin, routesHome } from "./Route/route";
 import AdminTemplate from "./template/AdminTemplate";
 import { useAppDispatch } from "./Hooks/Hook";
-import { setToken, setUserInfo } from "./Redux/credentials/credentialsReducer";
+import {
+  setIsLogin,
+  setToken,
+  setUserInfo,
+} from "./Redux/credentials/credentialsReducer";
 
 function App() {
   const dispatch = useAppDispatch();
   const token = localStorage.getItem("accessToken");
-  if (token) {
-    dispatch(setToken(token));
-  }
-
   const userInfo = localStorage.getItem("user");
   const adminInfo = localStorage.getItem("admin");
 
-  if (userInfo) {
-    dispatch(setUserInfo(JSON.parse(userInfo)));
-  }
-
-  if (adminInfo) {
-    dispatch(setUserInfo(JSON.parse(adminInfo)));
-  }
+  useEffect(() => {
+    dispatch(setIsLogin(false));
+    if (token && userInfo) {
+      dispatch(setToken(token));
+      dispatch(setIsLogin(true));
+      dispatch(setUserInfo(JSON.parse(userInfo)));
+    } else if (token && adminInfo) {
+      dispatch(setToken(token));
+      dispatch(setIsLogin(true));
+      dispatch(setUserInfo(JSON.parse(adminInfo)));
+    }
+  }, [token, userInfo, adminInfo, dispatch]);
 
   const showHomeLayout = (routesHome: Page[]) => {
     if (routesHome && routesHome.length > 0) {

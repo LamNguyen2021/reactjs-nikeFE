@@ -7,11 +7,13 @@ export interface CredentialsState {
     role: string;
     username: string;
   };
+  isLogin: boolean;
 }
 
 const initialState = {
   token: "",
   userInfo: {},
+  isLogin: false,
 };
 
 export const credentialsSlice = createSlice({
@@ -24,9 +26,12 @@ export const credentialsSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<object>) => {
       state.userInfo = { ...action.payload };
     },
+    setIsLogin: (state, action: PayloadAction<boolean>) => {
+      state.isLogin = action.payload;
+    },
   },
 });
 
-export const { setToken, setUserInfo } = credentialsSlice.actions;
+export const { setToken, setUserInfo, setIsLogin } = credentialsSlice.actions;
 
 export default credentialsSlice.reducer;
