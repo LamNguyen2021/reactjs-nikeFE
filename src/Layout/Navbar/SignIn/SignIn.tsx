@@ -144,7 +144,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   googleContainer: {
-    display: "flex",
+    // display: "flex",
     alignItems: "center",
     margin: "0px auto",
     width: 170,
@@ -304,37 +304,13 @@ export default function SignIn(props: Props) {
           </form>
           {/*Sign In with FB or GG normal*/}
           <span className={classes.signInWithNormal}>
-            <button className={classes.facebookLink}>
-              <span className={classes.facebookContainer}>
-                Sign in with Facebook{" "}
-                <img
-                  src="https://www.facebook.com/images/fb_icon_325x325.png"
-                  className={classes.Imange}
-                  alt=""
-                />
-              </span>
-            </button>
-            {/* <button className={classes.googleLink}>
-              <span
-                className={classes.googleContainer}
-                onClick={() => {
-                  loginGoogle();
-                }}
-              >
-                Sign in with Google{' '}
-                <img
-                  src='https://icons-for-free.com/iconfiles/png/512/app+global+google+plus+ios+media+social+icon-1320193328869704656.png'
-                  className={classes.Imange}
-                  alt=''
-                />
-              </span>
-            </button> */}
             <GoogleLogin
               clientId="794935655197-0h8k3h2a30vh1l732968c4lf49farfrg.apps.googleusercontent.com"
-              buttonText="Login with google"
+              buttonText="Sign in with Google"
               onSuccess={responseGoogle}
               onFailure={responseGoogle}
               cookiePolicy={"single_host_origin"}
+              className={classes.buttonSignIn}
             />
           </span>
         </div>

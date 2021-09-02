@@ -211,10 +211,7 @@ export default function SignUp(props: Props) {
       reset();
       handleClose();
 
-      toast.success("Sign up successfully", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 2500,
-      });
+      notifiSuccess("saved user's data into database");
     } catch (err) {
       const error = { ...err };
       toast.error(`${error.response.data.message}`, {

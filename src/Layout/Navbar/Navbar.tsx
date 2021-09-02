@@ -9,8 +9,8 @@ export default function NavBar() {
       <NavSub />
       <NavMain />
       <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
+        position="top-right"
+        autoClose={2500}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
