@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     paddingTop: 30,
     paddingBottom: 30,
-    // justifyContent: "space-around",
+    justifyContent: "space-around",
   },
 }));
 
