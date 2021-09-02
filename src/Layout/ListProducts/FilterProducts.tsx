@@ -1,147 +1,284 @@
 /* eslint-disable react/jsx-key */
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { withStyles } from "@material-ui/core/styles";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Collapse from "@material-ui/core/Collapse";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import productService from "../../Service/ProductService";
+import { ISize } from "../../Model/ISize";
+import { IColor } from "../../Model/IColor";
+import { IGender } from "../../Model/IGender";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    maxWidth: 300,
+  },
   Filter: {
-    backgroundColor: "white",
-    float: "left",
-    width: 190,
+    width: 220,
+    height: "80vh",
     fontSize: 16,
     paddingLeft: 40,
-  },
-  FilterGroup: {
-    paddingBottom: 20,
-    borderTop: "1px solid #e5e5e5",
-  },
-  FilterName: {
-    padding: "12px 0",
-    cursor: "pointer",
-    color: "black",
-    fontWeight: 500,
-  },
-  FilterCheckboxContainer: {
-    paddingLeft: 5,
-  },
-  FilterCheckboxLabel: {
-    "&:hover": {
-      color: "#757575",
+    paddingRight: 40,
+    overflowY: "auto",
+    "&::-webkit-scrollbar-track": {
+      webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+      backgroundColor: "#F5F5F5",
+    },
+    "&::-webkit-scrollbar": {
+      backgroundColor: "#F5F5F5",
+      width: 7,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      borderRadius: 100,
+      webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,.3)",
+      backgroundColor: "#555",
     },
   },
   Color: {
-    width: 28,
-    height: 28,
-    borderRadius: "50%",
-    paddingTop: 3,
-    color: "white",
-    fontWeight: "bold",
-  },
-  ColorContainer: {
+    width: 30,
+    height: 30,
+    padding: 0,
+    border: "1px solid black",
+    borderRadius: "100%",
     cursor: "pointer",
-  },
-  ColorName: {
-    marginTop: 5,
-    fontSize: 12,
-    "&:hover": {
-      color: "#757575",
-    },
+    "&:hover": {},
   },
   size: {
+    minWidth: "30px",
     padding: "5px 10px",
     textAlign: "center",
     border: "1px #CCCCCC solid",
     borderRadius: 5,
     cursor: "pointer",
-  },
-}));
-
-const BlackCheckbox = withStyles({
-  root: {
-    width: 30,
-    height: 30,
-    color: "#cccccc",
-    "&$checked": {
-      color: "black",
+    "&:hover": {
+      border: "2px solid",
     },
   },
-  checked: {},
-})((props) => <Checkbox color="default" {...props} />);
-
-function FilterProducts(props: any) {
+  hidden: {
+    display: "none",
+  },
+  flexWrapStyle: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+}));
+interface IProps {
+  filter: (name: string, genders: any, colors: any, sizes: any) => void;
+}
+function FilterProducts({ filter }: IProps) {
   const classes = useStyles();
 
-  const Size = ["36", "37", "38", "39", "40", "41", "42"];
+  const [Size, setSize] = React.useState<ISize[]>([]);
+  const [Color, setColor] = React.useState<IColor[]>([]);
+  const [Gender, setGender] = React.useState<IGender[]>([]);
 
-  const listSize = Size.map((item) => (
-    <Grid item xs={4}>
-      <div className={classes.size} style={{ border: "1px black solid" }}>
-        {item}
-      </div>
-    </Grid>
-  ));
+  useEffect(() => {
+    productService.getAllSize().then((res) => {
+      setSize(res.data);
+    });
+    productService.getAllColor().then((res) => {
+      setColor(res.data);
+    });
+    productService.getAllGender().then((res) => {
+      setGender(res.data);
+    });
+  }, []);
 
-  //collect color
-  const capitalizeFirstLetter = (string: any) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+  const [openGender, setOpenGender] = React.useState(true);
+  const [selectedGender, setSelectedGender] = React.useState<string[]>([]);
+
+  const [openColor, setOpenColor] = React.useState(true);
+  const [selectedColor, setSelectedColor] = React.useState<string[]>([]);
+
+  const [openSize, setOpenSize] = React.useState(true);
+  const [selectedSize, setSelectedSize] = React.useState<string[]>([]);
+
+  const handleToggle = (id: string, selected: string[], callback: Function) => {
+    const currentIndex = selected.indexOf(id); // kiểm tra item người dùng click vào đã có trong mảng đã chọn chưa
+    const newSelected = [...selected];
+
+    if (currentIndex === -1) {
+      // chưa có trong mảng được chọn
+      newSelected.push(id);
+    } else {
+      newSelected.splice(currentIndex, 1); // có rồi -> xóa đi
+    }
+
+    callback(newSelected); // render lại
   };
 
-  const Color = ["red", "yellow", "black", "pink", "green", "white"];
-
-  const listColor = Color.map((item) => (
-    <Grid item xs={4} className={classes.ColorContainer}>
-      <div
-        className={classes.Color}
-        style={{ backgroundColor: item, border: "1px #CCCCCC solid" }}
-      ></div>
-      <div className={classes.ColorName}>{capitalizeFirstLetter(item)}</div>
-    </Grid>
-  ));
+  useEffect(() => {
+    filter("", selectedGender, selectedColor, selectedSize);
+  }, [selectedGender, selectedColor, selectedSize]);
 
   return (
-    <Grid item md={2}>
+    <Grid item sm={3}>
       <div className={classes.Filter}>
-        {/*======== Gender ========*/}
-        <div className={classes.FilterGroup}>
-          <div className={classes.FilterName}>Gender</div>
-          <div className={classes.FilterCheckboxContainer}>
-            <div>
-              <FormControlLabel
-                control={<BlackCheckbox />}
-                label="Men"
-                className={classes.FilterCheckboxLabel}
-              />
-            </div>
-            <div>
-              <FormControlLabel
-                control={<BlackCheckbox />}
-                label="Women"
-                className={classes.FilterCheckboxLabel}
-              />
-            </div>
-          </div>
-        </div>
+        <List
+          component="nav"
+          aria-labelledby="nested-list-subheader"
+          className={classes.root}
+        >
+          {/* Gender */}
+          <ListItem
+            button
+            onClick={() => {
+              setOpenGender(!openGender);
+            }}
+          >
+            <ListItemText primary={`Gender(${selectedGender.length})`} />
+            {openGender ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={openGender} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {Gender.map((value) => {
+                const labelId = `checkbox-list-label-${value._id}`;
 
-        {/*======== Colour ========*/}
-        <div className={classes.FilterGroup}>
-          <div className={classes.FilterName}>Colour</div>
-          <Grid container spacing={2}>
-            {listColor}
-          </Grid>
-        </div>
-
-        {/*======== Size ========*/}
-        <div className={classes.FilterGroup}>
-          <div className={classes.FilterName}>Size</div>
-          <Grid container spacing={1}>
-            {listSize}
-          </Grid>
-        </div>
+                return (
+                  <ListItem
+                    key={value._id}
+                    role={undefined}
+                    dense
+                    button
+                    onClick={() => {
+                      handleToggle(
+                        value._id,
+                        selectedGender,
+                        setSelectedGender
+                      );
+                    }}
+                  >
+                    <Checkbox
+                      edge="start"
+                      checked={selectedGender.indexOf(value._id) !== -1} // kiểm tra id hiện tại có trong mảng không
+                      tabIndex={-1}
+                      disableRipple
+                      inputProps={{ "aria-labelledby": labelId }}
+                    />
+                    <ListItemText
+                      id={labelId}
+                      primary={`${value.nameGender}`}
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Collapse>
+          {/* Color */}
+          <ListItem
+            button
+            onClick={() => {
+              setOpenColor(!openColor);
+            }}
+          >
+            <ListItemText primary={`Color(${selectedColor.length})`} />
+            {openColor ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={openColor} timeout="auto" unmountOnExit>
+            <List
+              className={classes.flexWrapStyle}
+              component="div"
+              disablePadding
+            >
+              {Color.map((value) => {
+                const labelId = `checkbox-list-label-${value._id}`;
+                return (
+                  <Grid item xs={4}>
+                    <ListItem
+                      key={value._id}
+                      role={undefined}
+                      dense
+                      onClick={() => {
+                        handleToggle(
+                          value._id,
+                          selectedColor,
+                          setSelectedColor
+                        );
+                      }}
+                    >
+                      <ListItemIcon>
+                        {selectedColor.indexOf(value._id) !== -1 ? (
+                          <div
+                            className={classes.Color}
+                            style={{
+                              backgroundColor: `${value.nameColor}`,
+                              fontSize: 20,
+                              textAlign: "center",
+                              fontWeight: 900,
+                              color: `${
+                                value.nameColor === "white" ? "black" : "white"
+                              }`,
+                            }}
+                          >
+                            ✓
+                          </div>
+                        ) : (
+                          <div
+                            className={classes.Color}
+                            style={{
+                              backgroundColor: `${value.nameColor}`,
+                            }}
+                          ></div>
+                        )}
+                      </ListItemIcon>
+                    </ListItem>
+                  </Grid>
+                );
+              })}
+            </List>
+          </Collapse>
+          {/* Size */}
+          <ListItem
+            button
+            onClick={() => {
+              setOpenSize(!openSize);
+            }}
+          >
+            <ListItemText primary={`Size(${selectedSize.length})`} />
+            {openSize ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={openSize} timeout="auto" unmountOnExit>
+            <List
+              className={classes.flexWrapStyle}
+              component="div"
+              disablePadding
+            >
+              {Size.map((value) => {
+                const labelId = `checkbox-list-label-${value._id}`;
+                return (
+                  <Grid item xs={4}>
+                    <ListItem
+                      key={value._id}
+                      role={undefined}
+                      dense
+                      onClick={() => {
+                        handleToggle(value._id, selectedSize, setSelectedSize);
+                      }}
+                    >
+                      <ListItemText
+                        className={classes.size}
+                        id={labelId}
+                        primary={`${value.nameSize}`}
+                        style={
+                          selectedSize.indexOf(value._id) !== -1
+                            ? { border: "2px solid" }
+                            : {}
+                        }
+                      />
+                    </ListItem>
+                  </Grid>
+                );
+              })}
+            </List>
+          </Collapse>
+        </List>
       </div>
     </Grid>
   );
