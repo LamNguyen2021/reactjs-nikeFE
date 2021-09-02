@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LoginSocial } from "../../Model/IUser";
 import { STATUS } from "../../Config/statusCode";
-import { notifiSuccess } from "../../utils/MyToys";
+import { notifiError, notifiSuccess } from "../../utils/MyToys";
 
 const useStyles = makeStyles((theme) => ({
   navListFeature: {
@@ -211,13 +211,10 @@ export default function SignUp(props: Props) {
       reset();
       handleClose();
 
-      notifiSuccess("saved user's data into database");
+      notifiSuccess("Saved user's data into database");
     } catch (err) {
       const error = { ...err };
-      toast.error(`${error.response.data.message}`, {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 2500,
-      });
+      notifiError(error.response.data.message);
     }
   };
 

@@ -4,7 +4,7 @@ import {
   setUserInfo,
 } from "../reducer/credentialsReducer";
 import userService from "../../../../../Service/UserService";
-import { notifiSuccess } from "../../../../../utils/MyToys";
+import { notifiError, notifiSuccess } from "../../../../../utils/MyToys";
 
 export const fetchApiLogin = (data: any) => {
   return async (dispatch: any) => {
@@ -16,8 +16,9 @@ export const fetchApiLogin = (data: any) => {
       localStorage.setItem("accessToken", user.data.access_token);
       localStorage.setItem("person", JSON.stringify(user.data.info));
       notifiSuccess("Sign in successfully");
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      const error = { ...err };
+      notifiError(error.response.data.message);
     }
   };
 };

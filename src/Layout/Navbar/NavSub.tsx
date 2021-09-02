@@ -80,10 +80,10 @@ export default function NavSub() {
 
   const handleLogout = () => {
     localStorage.clear();
-    notifiSuccess("say bye");
     dispatch(setIsLogin(false));
     dispatch(setToken(""));
     dispatch(setUserInfo({}));
+    notifiSuccess("GOOD BYE");
   };
 
   // xử lý khi click vào icon user
