@@ -1,1 +1,1 @@
-export const API_NIKE = "https://management-shoes.herokuapp.com";
+export const API_NIKE = "https://nestjs-nike.herokuapp.com";

@@ -204,8 +204,8 @@ export default function SignUp(props: Props) {
       const user = await userService.signUp({
         ...data,
         yearOfBirth: parseInt(data.yearOfBirth),
-        statusId: "610bf10cdccf125e487e1b4b",
-        roleId: "60f32404d29b52428cff51f4",
+        statusId: "612b7e849114d43a08e82268",
+        roleId: "6121bf82ef30c0436c5cf8fb",
       });
 
       reset();

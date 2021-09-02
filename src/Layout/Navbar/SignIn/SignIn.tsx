@@ -5,7 +5,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
 import userService from "../../../Service/UserService";
-import { useAppDispatch } from "../../../Hooks/Hook";
+import { useAppDispatch, useAppSelector } from "../../../Hooks/Hook";
 import {
   setIsLogin,
   setToken,
@@ -16,6 +16,8 @@ import GoogleLogin from "react-google-login";
 import { STATUS } from "../../../Config/statusCode";
 import { notifiError, notifiSuccess } from "../../../utils/MyToys";
 import { fetchApiLogin } from "./module/action/Action";
+import { RootState } from "../../../Redux/store";
+import { setIsUpdatedUserProfile } from "../NavSub/module/reducer/userProfileReducer";
 
 const useStyles = makeStyles((theme) => ({
   navListFeature: {
@@ -158,6 +160,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 interface Props {
+  isUpdatedUserProfile: boolean;
   getDataLoginGoogle: (data: any) => void;
 }
 export default function SignIn(props: Props) {
@@ -165,6 +168,9 @@ export default function SignIn(props: Props) {
   const dispatch = useAppDispatch();
 
   const [open, setOpen] = React.useState(false);
+  const token = useAppSelector(
+    (state: RootState) => state.credentialsReducer.token
+  );
 
   const handleClickOpen = () => {
     reset();
@@ -197,6 +203,7 @@ export default function SignIn(props: Props) {
       dispatch(setToken(user.data.access_token));
       dispatch(setIsLogin(true));
       dispatch(setUserInfo(user.data.info));
+      // dispatch(fetchApiUserProfile(token));
       localStorage.setItem("accessToken", user.data.access_token);
       localStorage.setItem("person", JSON.stringify(user.data.info));
       notifiSuccess("Sign in successfully");
@@ -207,6 +214,13 @@ export default function SignIn(props: Props) {
     dispatch(fetchApiLogin(data));
     handleClose();
   };
+
+  React.useEffect(() => {
+    if (props.isUpdatedUserProfile) {
+      handleClickOpen();
+      dispatch(setIsUpdatedUserProfile(false));
+    }
+  }, [props.isUpdatedUserProfile]);
 
   return (
     <>
@@ -305,7 +319,7 @@ export default function SignIn(props: Props) {
           {/*Sign In with FB or GG normal*/}
           <span className={classes.signInWithNormal}>
             <GoogleLogin
-              clientId="794935655197-0h8k3h2a30vh1l732968c4lf49farfrg.apps.googleusercontent.com"
+              clientId="314040454355-n8gc4mqkmh6p7hj0fhdhp5lgamkj7e1k.apps.googleusercontent.com"
               buttonText="Sign in with Google"
               onSuccess={responseGoogle}
               onFailure={responseGoogle}

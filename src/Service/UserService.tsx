@@ -31,8 +31,16 @@ class UserService {
     return API(`google/${token}`, "GET", "", "");
   };
 
-  getUserInfo = (token: any) => {
+  getUserProfile = (token: any) => {
     return API("user/detail", "GET", "", token);
+  };
+
+  updateUserProfile = (updateUser: any, token: string) => {
+    return API("user/updateProfileUser", "PATCH", updateUser, token);
+  };
+
+  updateUserPassword = (updatePassword: any, token: string) => {
+    return API("user/updatePassword", "PATCH", updatePassword, token);
   };
 }
 const userService = new UserService();
