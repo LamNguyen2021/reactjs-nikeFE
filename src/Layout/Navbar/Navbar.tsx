@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { ToastContainer } from "react-toastify";
 import NavMain from "./NavMain";
-import NavSub from "./NavSub";
+import NavSub from "./NavSub/NavSub";
 
 export default function NavBar() {
   return (

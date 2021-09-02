@@ -30,6 +30,10 @@ class UserService {
   loginGoogle = (token: any) => {
     return API(`google/${token}`, "GET", "", "");
   };
+
+  getUserInfo = (token: any) => {
+    return API("user/detail", "GET", "", token);
+  };
 }
 const userService = new UserService();
 export default userService;
