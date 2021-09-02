@@ -7,7 +7,7 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import SignIn from "./SignIn";
+import SignIn from "./SignIn/SignIn";
 import SignUp from "./SignUp";
 import { useAppDispatch, useAppSelector } from "../../Hooks/Hook";
 import { RootState } from "../../Redux/store";
@@ -15,9 +15,11 @@ import {
   setIsLogin,
   setToken,
   setUserInfo,
-} from "../../Redux/credentials/credentialsReducer";
+} from "./SignIn/module/reducer/credentialsReducer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { notifiSuccess } from "../../utils/MyToys";
+import { LoginSocial } from "../../Model/IUser";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 export default function NavSub() {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const [data, setData] = React.useState<LoginSocial>({} as LoginSocial);
   const isLogin = useAppSelector(
     (state: RootState) => state.credentialsReducer.isLogin
   );
@@ -70,17 +73,17 @@ export default function NavSub() {
   const userInfo: any = useAppSelector(
     (state: RootState) => state.credentialsReducer.userInfo
   );
+  const getDataLoginGoogle = (data: LoginSocial) => {
+    // data = {email: "9.4ngoclam@gmail.com", name: "Ngoc Lam Nguyen"},statusCode 308
+    setData(data);
+  };
 
   const handleLogout = () => {
     localStorage.clear();
+    notifiSuccess("say bye");
     dispatch(setIsLogin(false));
     dispatch(setToken(""));
     dispatch(setUserInfo({}));
-
-    toast.dark("GOOD BYE 😭", {
-      position: toast.POSITION.TOP_CENTER,
-      autoClose: 2500,
-    });
   };
 
   // xử lý khi click vào icon user
@@ -95,7 +98,7 @@ export default function NavSub() {
   return (
     <AppBar position="static" className={classes.header}>
       <div className={classes.toolbar}>
-        {token && isLogin ? (
+        {userInfo && isLogin ? (
           <>
             <IconButton onClick={handleClick}>
               <AccountCircleIcon style={{ cursor: "pointer" }} />
@@ -122,8 +125,8 @@ export default function NavSub() {
           </>
         ) : (
           <>
-            <SignIn />
-            <SignUp />
+            <SignIn getDataLoginGoogle={getDataLoginGoogle} />
+            <SignUp data={data} getDataLoginGoogle={getDataLoginGoogle} />
           </>
         )}
       </div>

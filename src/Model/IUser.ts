@@ -32,3 +32,12 @@ export interface SignUp {
   statusId: string;
   roleId: string;
 }
+
+export interface Data {
+  email: string;
+  name: string;
+}
+export interface LoginSocial {
+  statusCode: number;
+  data: Data;
+}

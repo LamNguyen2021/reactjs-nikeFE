@@ -3,19 +3,19 @@ import { Dialog, IconButton, makeStyles } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
-import GoogleLogin from "react-google-login";
 import { TransitionProps } from "@material-ui/core/transitions";
-import userService from "../../Service/UserService";
-import { useAppDispatch } from "../../Hooks/Hook";
+import userService from "../../../Service/UserService";
+import { useAppDispatch } from "../../../Hooks/Hook";
 import {
   setIsLogin,
   setToken,
   setUserInfo,
-} from "../../Redux/credentials/credentialsReducer";
-import { USER_ROLE } from "../../Config";
-import { ToastContainer, toast } from "react-toastify";
+} from "./module/reducer/credentialsReducer";
 import "react-toastify/dist/ReactToastify.css";
-import { STATUS } from "../../Config/statusCode";
+import GoogleLogin from "react-google-login";
+import { STATUS } from "../../../Config/statusCode";
+import { notifiError, notifiSuccess } from "../../../utils/MyToys";
+import { fetchApiLogin } from "./module/action/Action";
 
 const useStyles = makeStyles((theme) => ({
   navListFeature: {
@@ -157,8 +157,10 @@ const Transition = React.forwardRef(function Transition(
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
-export default function SignIn() {
+interface Props {
+  getDataLoginGoogle: (data: any) => void;
+}
+export default function SignIn(props: Props) {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
@@ -185,45 +187,25 @@ export default function SignIn() {
   } = useForm<FormSignInValues>();
 
   const responseGoogle = async (response: any) => {
-    // console.log(response.tokenId);
+    //response: thông tin gg trả về: email, fullname, profile, token, ggid...
     const user = await userService.loginGoogle(response.tokenId);
-
     if (user.data.statusCode === STATUS.REDIRECT) {
-      alert("hello chó hiếu");
+      props.getDataLoginGoogle(user.data);
+      handleClose();
+    } else {
+      // status code = 200 -> user đã có trong database
+      dispatch(setToken(user.data.access_token));
+      dispatch(setIsLogin(true));
+      dispatch(setUserInfo(user.data.info));
+      localStorage.setItem("accessToken", user.data.access_token);
+      localStorage.setItem("person", JSON.stringify(user.data.info));
+      notifiSuccess("Sign in successfully");
     }
-    console.log(user);
   };
 
-  const onSubmitSignIn = async (data: any) => {
-    try {
-      const user = await userService.login(data);
-
-      localStorage.setItem("accessToken", user.data.access_token);
-
-      if (user.data.info.role === USER_ROLE.ADMIN) {
-        localStorage.setItem("admin", user.data.info);
-      } else if (user.data.info.role === USER_ROLE.USER) {
-        localStorage.setItem("user", JSON.stringify(user.data.info));
-      }
-
-      dispatch(setToken(user.data.access_token));
-      dispatch(setUserInfo(user.data.info));
-      dispatch(setIsLogin(true));
-
-      reset();
-      handleClose();
-
-      toast.success("Sign in successfully", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 2500,
-      });
-    } catch (err) {
-      const error = { ...err };
-      toast.error(`${error.response.data.message}`, {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 2500,
-      });
-    }
+  const onSubmitSignIn = (data: any) => {
+    dispatch(fetchApiLogin(data));
+    handleClose();
   };
 
   return (
@@ -319,34 +301,44 @@ export default function SignIn() {
             >
               OR
             </span>
-
-            {/*Sign In with FB or GG normal*/}
-            <span className={classes.signInWithNormal}>
-              <button className={classes.facebookLink}>
-                <span className={classes.facebookContainer}>
-                  Sign in with Facebook{" "}
-                  <img
-                    src="https://www.facebook.com/images/fb_icon_325x325.png"
-                    className={classes.Imange}
-                    alt=""
-                  />
-                </span>
-              </button>
-              <button className={classes.googleLink}>
-                <span className={classes.googleContainer}>
-                  Sign in with Google{" "}
-                  <img
-                    src="https://icons-for-free.com/iconfiles/png/512/app+global+google+plus+ios+media+social+icon-1320193328869704656.png"
-                    className={classes.Imange}
-                    alt=""
-                  />
-                </span>
-              </button>
-            </span>
           </form>
+          {/*Sign In with FB or GG normal*/}
+          <span className={classes.signInWithNormal}>
+            <button className={classes.facebookLink}>
+              <span className={classes.facebookContainer}>
+                Sign in with Facebook{" "}
+                <img
+                  src="https://www.facebook.com/images/fb_icon_325x325.png"
+                  className={classes.Imange}
+                  alt=""
+                />
+              </span>
+            </button>
+            {/* <button className={classes.googleLink}>
+              <span
+                className={classes.googleContainer}
+                onClick={() => {
+                  loginGoogle();
+                }}
+              >
+                Sign in with Google{' '}
+                <img
+                  src='https://icons-for-free.com/iconfiles/png/512/app+global+google+plus+ios+media+social+icon-1320193328869704656.png'
+                  className={classes.Imange}
+                  alt=''
+                />
+              </span>
+            </button> */}
+            <GoogleLogin
+              clientId="794935655197-0h8k3h2a30vh1l732968c4lf49farfrg.apps.googleusercontent.com"
+              buttonText="Login with google"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              cookiePolicy={"single_host_origin"}
+            />
+          </span>
         </div>
       </Dialog>
-      <ToastContainer />
     </>
   );
 }

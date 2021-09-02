@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "../features/counter/counterSlice";
 import listMovieReducer from "./moduleDemo/reducer/ListMovieReducer";
-import credentialsReducer from "./credentials/credentialsReducer";
+import credentialsReducer from "../Layout/Navbar/SignIn/module/reducer/credentialsReducer";
 
 export const store = configureStore({
   reducer: {

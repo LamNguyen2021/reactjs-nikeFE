@@ -7,6 +7,9 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import userService from "../../Service/UserService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { LoginSocial } from "../../Model/IUser";
+import { STATUS } from "../../Config/statusCode";
+import { notifiSuccess } from "../../utils/MyToys";
 
 const useStyles = makeStyles((theme) => ({
   navListFeature: {
@@ -149,10 +152,24 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function SignUp() {
+interface Props {
+  data: LoginSocial;
+  getDataLoginGoogle: (data: any) => void;
+}
+
+export default function SignUp(props: Props) {
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (props.data?.statusCode === STATUS.REDIRECT) {
+      notifiSuccess("please fill out all fields to sign up");
+      handleClickOpen();
+      setValue("email", props.data.data.email);
+      setValue("name", props.data.data?.name);
+    }
+  }, [props.data]);
 
   const handleClickOpen = () => {
     reset();
@@ -161,6 +178,7 @@ export default function SignUp() {
   const handleClose = () => {
     reset();
     setOpen(false);
+    props.getDataLoginGoogle(null);
   };
 
   type FormSignUpValues = {
@@ -178,6 +196,7 @@ export default function SignUp() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<FormSignUpValues>();
 
   const onSubmitSignUp = async (data: any) => {
@@ -189,13 +208,13 @@ export default function SignUp() {
         roleId: "60f32404d29b52428cff51f4",
       });
 
+      reset();
+      handleClose();
+
       toast.success("Sign up successfully", {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2500,
       });
-
-      reset();
-      handleClose();
     } catch (err) {
       const error = { ...err };
       toast.error(`${error.response.data.message}`, {
