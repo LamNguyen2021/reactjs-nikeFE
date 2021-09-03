@@ -148,12 +148,21 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
   const [size, setSize] = React.useState<ISize[]>([]);
   const [selectedSize, setSelectedSize] = React.useState<string>("");
   const [infoProduct, setInfoProduct] = React.useState<any>({
-    name: productDetail.product.name,
-    details: productDetail.details[0],
+    name: "",
+    details: {},
   });
 
+  console.log("product detail", productDetail);
+
+  React.useEffect(() => {
+    setInfoProduct({
+      name: productDetail[0] && productDetail[0].info.product.name,
+      details: productDetail[0] && productDetail[0],
+    });
+    onSubmitImages(productDetail[0] && productDetail[0]?.images);
+  }, [productDetail]);
+
   useEffect(() => {
-    onSubmitImages(infoProduct.details.images);
     productService
       .getAllSize()
       .then((res) => {
@@ -173,14 +182,36 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
     setSelectedSize(size);
   };
 
+  // hiện hình nhỏ
+  const bindingArr = () => {
+    if (productDetail.length > 0) {
+      return productDetail.map((item: any, index: number) => {
+        return (
+          <Grid item xs={4} key={index}>
+            <img
+              alt=""
+              src={item.images[0].urlImage}
+              className={classes.ProductColorwayImageHide}
+              onClick={() => {
+                handleChangeInfo(item);
+              }}
+            />
+          </Grid>
+        );
+      });
+    }
+  };
+
   const checkSize = (item: any) => {
     let flag = false;
-    infoProduct.details.quantities.forEach((el: any) => {
-      if (el.size === item._id) {
-        // co size trong kho
-        flag = true;
-      }
-    });
+    if (infoProduct && infoProduct.details) {
+      infoProduct.details.quantities.forEach((el: any) => {
+        if (el.size === item._id) {
+          // co size trong kho
+          flag = true;
+        }
+      });
+    }
 
     if (flag) {
       if (selectedSize === item.nameSize) {
@@ -194,12 +225,14 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
 
   const checkIsDisableSize = (item: any) => {
     let flag = false;
-    infoProduct.details.quantities.forEach((el: any) => {
-      if (el.size === item._id) {
-        // co size trong kho
-        flag = true;
-      }
-    });
+    if (infoProduct && infoProduct.details) {
+      infoProduct.details.quantities.forEach((el: any) => {
+        if (el.size === item._id) {
+          // co size trong kho
+          flag = true;
+        }
+      });
+    }
 
     if (flag) {
       return false;
@@ -228,28 +261,25 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
       {/* show info */}
       <Grid item xs={8}>
         <div className={classes.ShoesType}>
-          Gender: {infoProduct.details.info.gender.nameGender}
+          Gender:{" "}
+          {infoProduct &&
+            infoProduct.details &&
+            infoProduct.details.info &&
+            infoProduct.details.info.gender.nameGender}
         </div>
-        <div className={classes.ShoesName}>{infoProduct.name}</div>
+        <div className={classes.ShoesName}>
+          {infoProduct &&
+            infoProduct.details &&
+            infoProduct.details.info &&
+            infoProduct.details.info.product.name}
+        </div>
       </Grid>
       <Grid item xs={4}>
-        <div className={classes.Price}>$254</div>
+        {/* <div className={classes.Price}>$254</div> */}
       </Grid>
 
       {/* show images */}
-      {productDetail.details.map((item: any, index: any) => {
-        return (
-          <Grid item xs={4} key={index}>
-            <img
-              src={item.images[0].urlImage}
-              className={classes.ProductColorwayImageHide}
-              onClick={() => {
-                handleChangeInfo(item);
-              }}
-            />
-          </Grid>
-        );
-      })}
+      {bindingArr()}
 
       {/* show sizes */}
       <Grid item xs={12}>

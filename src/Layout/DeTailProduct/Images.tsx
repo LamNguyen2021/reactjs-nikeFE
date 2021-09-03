@@ -26,20 +26,26 @@ interface IProps {
 }
 function Images({ images }: IProps) {
   const classes = useStyles();
-  console.log(images);
-  if (Object.keys(images).length === 0) {
-    return <span>loading...</span>;
+  if (images) {
+    if (Object.keys(images).length === 0) {
+      return <span>loading...</span>;
+    }
   }
 
   return (
     <Grid container className={classes.ProductContainer} spacing={2}>
-      {images.map((item: any) => {
-        return (
-          <Grid item xs={6} key={images._id}>
-            <img className={classes.ProductImage} src={item.urlImage} />
-          </Grid>
-        );
-      })}
+      {images &&
+        images.map((item: any) => {
+          return (
+            <Grid item xs={6} key={images._id}>
+              <img
+                alt=""
+                className={classes.ProductImage}
+                src={item.urlImage}
+              />
+            </Grid>
+          );
+        })}
     </Grid>
   );
 }
