@@ -74,9 +74,9 @@ export default function ListProducts({ products }: IProps) {
 
   return (
     <Grid container spacing={2} className={classes.listProductMainContainer}>
-      {products.map((product) => {
+      {products.map((product, index) => {
         return (
-          <Grid item xs={6} md={4}>
+          <Grid item xs={6} md={4} key={index}>
             <ProductComponent product={product} />
           </Grid>
         );
