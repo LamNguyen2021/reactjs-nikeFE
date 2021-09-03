@@ -7,6 +7,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { notifiError, notifiSuccess } from "../../../utils/MyToys";
 import { useForm } from "react-hook-form";
 import userService from "../../../Service/UserService";
+import { setIsCRUD } from "./module/manageUserReducer";
+import { useAppDispatch } from "../../../Hooks/Hook";
 
 const useStyles = makeStyles((theme) => ({
   Container: {
@@ -45,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 function CreateUser() {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
   type FormCreateUserValues = {
     username: string;
@@ -69,6 +72,7 @@ function CreateUser() {
         yearOfBirth: parseInt(data.yearOfBirth),
       });
       reset();
+      dispatch(setIsCRUD(true));
       notifiSuccess("Saved user's data into database");
     } catch (err) {
       const error = { ...err };

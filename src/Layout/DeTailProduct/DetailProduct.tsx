@@ -5,6 +5,8 @@ import Images from "./Images";
 import MainInfo from "./MainInfo";
 import { useParams } from "react-router-dom";
 import productDetailService from "../../Service/ProductDetailService";
+import { useAppSelector } from "../../Hooks/Hook";
+import { RootState } from "../../Redux/store";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,22 +21,9 @@ type ProductDetailParams = {
 };
 function DetailProduct() {
   const classes = useStyles();
-  const { id } = useParams<ProductDetailParams>();
-
-  const [productsDetail, setProductsDetail] = React.useState<any>([]);
-
-  React.useEffect(() => {
-    productDetailService
-      .getProductDetail(id)
-      .then((res) => {
-        setProductsDetail(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  // console.log(productsDetail);
+  const productDetail = useAppSelector(
+    (state: RootState) => state.detailProductReducer.productDetail
+  );
 
   return (
     <Grid container spacing={2} className={classes.container}>
@@ -43,7 +32,7 @@ function DetailProduct() {
       </Grid>
 
       <Grid item sm={12} md={4}>
-        <MainInfo productsDetail={productsDetail} />
+        <MainInfo />
       </Grid>
     </Grid>
   );

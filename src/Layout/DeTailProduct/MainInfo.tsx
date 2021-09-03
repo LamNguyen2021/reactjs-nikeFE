@@ -130,10 +130,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface IProps {
-  productsDetail: [];
-}
-function MainInfo(props: IProps) {
+function MainInfo() {
   const classes = useStyles();
   const [size, setSize] = React.useState<ISize[]>([]);
   const [selectedSize, setSelectedSize] = React.useState<string>("");

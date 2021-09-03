@@ -16,8 +16,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { notifiError, notifiSuccess } from "../../../utils/MyToys";
 import userService from "../../../Service/UserService";
 import { useForm } from "react-hook-form";
-import { useAppSelector } from "../../../Hooks/Hook";
+import { useAppDispatch, useAppSelector } from "../../../Hooks/Hook";
 import { RootState } from "../../../Redux/store";
+import { setIsCRUD } from "./module/manageUserReducer";
 
 const useRowStyles = makeStyles({
   root: {
@@ -73,6 +74,7 @@ interface IProps {
 
 export default function Row({ user, findUser }: IProps) {
   const classes = useRowStyles();
+  const dispatch = useAppDispatch();
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [id, setId] = React.useState("");
@@ -127,6 +129,7 @@ export default function Row({ user, findUser }: IProps) {
       const updateUser = await userService.updateUserByID(data, id, token);
 
       reset();
+      dispatch(setIsCRUD(true));
       notifiSuccess("Update user profile successfully");
       handleCloseDialog();
     } catch (err) {
@@ -149,7 +152,8 @@ export default function Row({ user, findUser }: IProps) {
     try {
       await userService.deleteUser(id, token);
       setOpenConfirm(false);
-      notifiSuccess("Update user profile successfully");
+      dispatch(setIsCRUD(true));
+      notifiSuccess("Delete user successfully");
     } catch (err) {
       console.log({ ...err });
     }
@@ -340,17 +344,11 @@ export default function Row({ user, findUser }: IProps) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
+          {"Are you sure you want to DELETE ?"}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseConfirm} color="primary">
-            Disagree
+            No
           </Button>
           <Button
             color="primary"
@@ -359,7 +357,7 @@ export default function Row({ user, findUser }: IProps) {
               handleDeleteUser(id);
             }}
           >
-            Agree
+            Yes
           </Button>
         </DialogActions>
       </Dialog>
