@@ -5,6 +5,7 @@ import credentialsReducer from "../Layout/Navbar/SignIn/module/reducer/credentia
 import userProfileReducer from "../Layout/Navbar/NavSub/module/reducer/userProfileReducer";
 import detailProductReducer from "../Layout/DeTailProduct/module/detailProductReducer";
 import manageUserReducer from "../Layout/Admin/Users/module/manageUserReducer";
+import categoryReducer from "../Layout/Navbar/NavMenu/categoryReducer";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     userProfileReducer,
     detailProductReducer,
     manageUserReducer,
+    categoryReducer,
   },
 });
 
