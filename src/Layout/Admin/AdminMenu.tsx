@@ -2,7 +2,6 @@ import React from "react";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
@@ -10,33 +9,12 @@ import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import { withStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
 import AdminMenuItem from "./AdminMenuItem";
 import { useHistory } from "react-router";
 import { notifiSuccess } from "../../utils/MyToys";
 import { ToastContainer } from "react-toastify";
+import { StyledButton } from "../../Component/Button";
 
-const StyledButton = withStyles({
-  root: {
-    backgroundImage:
-      "linear-gradient(to left, #227df9 0%, #7462f9 25%, #df3ef8 50%, #7462f9 75%, #227df9 100%)",
-    borderRadius: 3,
-    border: 0,
-    color: "white",
-    height: 48,
-    padding: "0 30px",
-    backgroundSize: "250% auto",
-    transition: "all 0.5s ease !important",
-    width: "100%",
-    "&:hover": {
-      backgroundPosition: "right center",
-    },
-  },
-  label: {
-    textTransform: "capitalize",
-  },
-})(Button);
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({

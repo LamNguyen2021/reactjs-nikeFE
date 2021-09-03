@@ -11,4 +11,6 @@ export const PATH_NAME = {
   PRODUCT_DETAIL: "/detailProduct/:id",
   ADMIN: "/admin",
   ADMIN_USER: "/admin/users",
+  ADMIN_PRODUCT: "/admin/products",
+  ADMIN_STATUS: "/admin/status",
 };
