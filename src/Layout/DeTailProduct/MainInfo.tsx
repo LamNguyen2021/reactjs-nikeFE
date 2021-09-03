@@ -1,7 +1,10 @@
 /* eslint-disable react/jsx-key */
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
+import { ISize } from "../../Model/ISize";
+import { ListItem, ListItemText } from "@material-ui/core";
+import productService from "../../Service/ProductService";
 
 const useStyles = makeStyles((theme) => ({
   ProductContainer: {
@@ -55,12 +58,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   SizeLabelChecked: {
-    boxShadow: "rgb(17, 17, 17) 0px 0px 0px 1px inset",
+    boxShadow: "0 0 0 2px black",
     padding: "10px 0 10px 0",
     fontSize: 16,
     textAlign: "center",
     cursor: "pointer",
-    borderRadius: "20px",
+    borderRadius: "2px",
   },
   AddtoBag: {
     width: "100%",
@@ -127,24 +130,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function MainInfo() {
+interface IProps {
+  productsDetail: [];
+}
+function MainInfo(props: IProps) {
   const classes = useStyles();
+  const [size, setSize] = React.useState<ISize[]>([]);
+  const [selectedSize, setSelectedSize] = React.useState<string>("");
+
+  useEffect(() => {
+    productService
+      .getAllSize()
+      .then((res) => {
+        setSize(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   const listImages = [
     "https://static.nike.com/a/images/t_PDP_144_v1/f_auto/c59cb6b6-3386-464e-859b-bfb3f456886b/air-force-1-shadow-shoe-klCJXd.png",
     "https://static.nike.com/a/images/t_PDP_144_v1/f_auto/a0ca97be-ce25-456a-8ba7-73216a041c70/air-force-1-shadow-shoe-klCJXd.png",
   ];
 
-  const listSize = ["35", "36", "37", "38", "39", "40"].map((item, index) => (
-    <Grid item xs={4} key={index}>
-      <label>
-        <input
-          type="radio"
-          name="box"
-          value={item}
-          className={classes.SizeRadio}
+  const handleChooseSize = (size: string) => {
+    setSelectedSize(size);
+  };
+
+  const listSize = size.map((item) => (
+    <Grid item xs={4} key={item._id}>
+      <ListItem
+        disableGutters
+        onClick={() => {
+          handleChooseSize(item.nameSize);
+        }}
+      >
+        <ListItemText
+          primary={`${item.nameSize}`}
+          className={
+            selectedSize === item.nameSize
+              ? classes.SizeLabelChecked
+              : classes.SizeLabel
+          }
         />
-        <div className={classes.SizeLabel}>{item}</div>
-      </label>
+      </ListItem>
     </Grid>
   ));
 

@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core";
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   productLinkGTColor: {
@@ -62,6 +63,10 @@ interface IProps {
 }
 export default function ProductComponent({ product }: IProps) {
   const classes = useStyles();
+  let history = useHistory();
+  const gotoProductDetail = () => {
+    history.push(`/detailProduct/${product.product._id}`);
+  };
 
   const [imageMain, setImageMain] = React.useState(
     product.details[0].images[0].urlImage
@@ -69,7 +74,11 @@ export default function ProductComponent({ product }: IProps) {
 
   return (
     <span className={classes.productLinkGTColor}>
-      <img className={classes.productImage} src={imageMain} />
+      <img
+        className={classes.productImage}
+        src={imageMain}
+        onClick={gotoProductDetail}
+      />
       <div className={classes.productDetailColorway}>
         <div>{product.product.name}</div>
         <div className={classes.colorShoe}>{product.details.length} Colour</div>
