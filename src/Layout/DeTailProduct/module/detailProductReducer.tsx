@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface ProductDetail {
-  productDetail: object;
+  productDetail: any;
 }
 
 const initialState = {
@@ -12,8 +12,8 @@ export const productDetailSlice = createSlice({
   name: "productDetail",
   initialState,
   reducers: {
-    setProductDetail: (state, action: PayloadAction<object>) => {
-      state.productDetail = { ...action.payload };
+    setProductDetail: (state, action: PayloadAction<any>) => {
+      state.productDetail = action.payload;
     },
   },
 });

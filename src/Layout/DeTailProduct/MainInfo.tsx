@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { ISize } from "../../Model/ISize";
-import { ListItem, ListItemText } from "@material-ui/core";
+import { Button, ListItem, ListItemText } from "@material-ui/core";
 import productService from "../../Service/ProductService";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,10 +51,10 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 0 10px 0",
     textAlign: "center",
     cursor: "pointer",
-    borderRadius: "20px",
+    borderRadius: "2px",
+    transition: "none",
     "&:hover": {
       boxShadow: "0 0 0 2px black",
-      borderRadius: 2,
     },
   },
   SizeLabelChecked: {
@@ -63,6 +63,13 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 16,
     textAlign: "center",
     cursor: "pointer",
+    borderRadius: "2px",
+  },
+  SizeLabelNotAvailable: {
+    color: "#d7d7d7",
+    padding: "10px 0 10px 0",
+    fontSize: 16,
+    textAlign: "center",
     borderRadius: "2px",
   },
   AddtoBag: {
@@ -108,7 +115,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100px",
     height: "100px",
     borderRadius: "4px",
-    opacity: 0.8,
+    opacity: 1,
+    cursor: "pointer",
   },
   CheckSize: {
     boxShadow: "rgb(212, 63, 33) 0px 0px 0px 1px",
@@ -130,10 +138,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function MainInfo() {
+interface IProps {
+  productDetail: any;
+  onSubmitImages: Function;
+}
+
+function MainInfo({ productDetail, onSubmitImages }: IProps) {
   const classes = useStyles();
   const [size, setSize] = React.useState<ISize[]>([]);
   const [selectedSize, setSelectedSize] = React.useState<string>("");
+  const [infoProduct, setInfoProduct] = React.useState<any>({
+    name: "",
+    details: {},
+  });
+
+  console.log("product detail", productDetail);
+
+  React.useEffect(() => {
+    setInfoProduct({
+      name: productDetail[0] && productDetail[0].info.product.name,
+      details: productDetail[0] && productDetail[0],
+    });
+    onSubmitImages(productDetail[0] && productDetail[0]?.images);
+  }, [productDetail]);
 
   useEffect(() => {
     productService
@@ -145,32 +172,87 @@ function MainInfo() {
         console.log(err);
       });
   }, []);
-  const listImages = [
-    "https://static.nike.com/a/images/t_PDP_144_v1/f_auto/c59cb6b6-3386-464e-859b-bfb3f456886b/air-force-1-shadow-shoe-klCJXd.png",
-    "https://static.nike.com/a/images/t_PDP_144_v1/f_auto/a0ca97be-ce25-456a-8ba7-73216a041c70/air-force-1-shadow-shoe-klCJXd.png",
-  ];
+
+  const handleChangeInfo = (item: any) => {
+    setInfoProduct({ ...infoProduct, details: item });
+    onSubmitImages(item.images);
+  };
 
   const handleChooseSize = (size: string) => {
     setSelectedSize(size);
   };
 
-  const listSize = size.map((item) => (
+  // hiện hình nhỏ
+  const bindingArr = () => {
+    if (productDetail.length > 0) {
+      return productDetail.map((item: any, index: number) => {
+        return (
+          <Grid item xs={4} key={index}>
+            <img
+              alt=""
+              src={item.images[0].urlImage}
+              className={classes.ProductColorwayImageHide}
+              onClick={() => {
+                handleChangeInfo(item);
+              }}
+            />
+          </Grid>
+        );
+      });
+    }
+  };
+
+  const checkSize = (item: any) => {
+    let flag = false;
+    if (infoProduct && infoProduct.details) {
+      infoProduct.details.quantities.forEach((el: any) => {
+        if (el.size === item._id) {
+          // co size trong kho
+          flag = true;
+        }
+      });
+    }
+
+    if (flag) {
+      if (selectedSize === item.nameSize) {
+        return classes.SizeLabelChecked;
+      } else return classes.SizeLabel;
+    } else {
+      // khong co size trong kho
+      return classes.SizeLabelNotAvailable;
+    }
+  };
+
+  const checkIsDisableSize = (item: any) => {
+    let flag = false;
+    if (infoProduct && infoProduct.details) {
+      infoProduct.details.quantities.forEach((el: any) => {
+        if (el.size === item._id) {
+          // co size trong kho
+          flag = true;
+        }
+      });
+    }
+
+    if (flag) {
+      return false;
+    } else {
+      // khong co size trong kho
+      return true;
+    }
+  };
+
+  const listSize = size.map((item, index) => (
     <Grid item xs={4} key={item._id}>
-      <ListItem
-        disableGutters
+      <Button
         onClick={() => {
           handleChooseSize(item.nameSize);
         }}
+        className={checkSize(item)}
+        disabled={checkIsDisableSize(item)}
       >
-        <ListItemText
-          primary={`${item.nameSize}`}
-          className={
-            selectedSize === item.nameSize
-              ? classes.SizeLabelChecked
-              : classes.SizeLabel
-          }
-        />
-      </ListItem>
+        {item.nameSize}
+      </Button>
     </Grid>
   ));
 
@@ -178,25 +260,26 @@ function MainInfo() {
     <Grid container className={classes.ProductContainer} spacing={2}>
       {/* show info */}
       <Grid item xs={8}>
-        <div className={classes.ShoesType}>Men's shoes</div>
-        <div className={classes.ShoesName}>Nike Air Force 1</div>
+        <div className={classes.ShoesType}>
+          Gender:{" "}
+          {infoProduct &&
+            infoProduct.details &&
+            infoProduct.details.info &&
+            infoProduct.details.info.gender.nameGender}
+        </div>
+        <div className={classes.ShoesName}>
+          {infoProduct &&
+            infoProduct.details &&
+            infoProduct.details.info &&
+            infoProduct.details.info.product.name}
+        </div>
       </Grid>
       <Grid item xs={4}>
-        <div className={classes.Price}>$254</div>
+        {/* <div className={classes.Price}>$254</div> */}
       </Grid>
 
       {/* show images */}
-      {listImages.map((item, index) => {
-        return (
-          <Grid item xs={4}>
-            <img
-              key={index}
-              src={item}
-              className={classes.ProductColorwayImageHide}
-            />
-          </Grid>
-        );
-      })}
+      {bindingArr()}
 
       {/* show sizes */}
       <Grid item xs={12}>

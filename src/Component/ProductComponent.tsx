@@ -66,10 +66,8 @@ interface IProps {
 export default function ProductComponent({ product }: IProps) {
   const classes = useStyles();
   let history = useHistory();
-  const dispatch = useAppDispatch();
 
   const gotoProductDetail = () => {
-    dispatch(setProductDetail(product));
     history.push(`/detailProduct/${product.product._id}`);
   };
 
@@ -80,6 +78,7 @@ export default function ProductComponent({ product }: IProps) {
   return (
     <span className={classes.productLinkGTColor}>
       <img
+        alt=""
         className={classes.productImage}
         src={imageMain}
         onClick={gotoProductDetail}
@@ -91,7 +90,7 @@ export default function ProductComponent({ product }: IProps) {
       <div className={classes.collectImageSmall}>
         {product.details?.map((detail: any, index: any) => {
           return (
-            <a href="" key={index}>
+            <a href="#" key={index}>
               <img
                 src={detail.images[0].urlImage}
                 alt=""
