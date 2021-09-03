@@ -1,5 +1,4 @@
 import API from "../Config/api";
-import { API_NIKE } from "../Config/url";
 import { CreateUserProfile, Login, SignUp } from "../Model/IUser";
 
 class UserService {
@@ -7,7 +6,9 @@ class UserService {
     localStorage.clear();
   };
 
-  getAccessToken = () => localStorage.getItem("accessToken");
+  getAccessToken = () => {
+    return localStorage.getItem("accessToken") || "";
+  };
 
   getUser = () => {
     const user = localStorage.getItem("user") || "";
@@ -60,5 +61,7 @@ class UserService {
     return API(`user/${id}`, "DELETE", "", token);
   };
 }
+
 const userService = new UserService();
+
 export default userService;

@@ -54,6 +54,17 @@ function AdminMenuItem() {
             <ListItemText primary="Users" />
           </ListItem>
         </Link>
+        <Link
+          to="/admin/status"
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <ListItem button>
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Status" />
+          </ListItem>
+        </Link>
       </List>
     </Fragment>
   );
