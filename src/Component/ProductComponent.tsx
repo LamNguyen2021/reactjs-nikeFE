@@ -90,7 +90,9 @@ export default function ProductComponent({ product }: IProps) {
           );
         })}
       </div>
-      <div className={classes.price}>${product.details[0].info.price}</div>
+      <div className={classes.price}>
+        ${product.details[0].quantities[0].price}
+      </div>
     </span>
   );
 }
