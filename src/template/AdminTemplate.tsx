@@ -1,11 +1,6 @@
 import React from "react";
 import { Props } from "../Model/IPage";
-import {
-  Route,
-  Redirect,
-  RouteProps,
-  RouteComponentProps,
-} from "react-router-dom";
+import { Route, RouteProps, RouteComponentProps } from "react-router-dom";
 const AdminLayout = (props: Props) => {
   return <React.Fragment>{props.children}</React.Fragment>;
 };

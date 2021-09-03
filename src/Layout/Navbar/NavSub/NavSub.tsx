@@ -23,7 +23,7 @@ import { LoginSocial } from "../../../Model/IUser";
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Hook";
 import SignIn from "../SignIn/SignIn";
 import SignUp from "../SignUp";
-import { PATH_NAME } from "../../../Config";
+import { PATH_NAME, USER_ROLE } from "../../../Config";
 import { fetchApiUserProfile } from "./module/action/action";
 import { useHistory } from "react-router-dom";
 
@@ -103,6 +103,7 @@ export default function NavSub() {
 
   //========== xử lý khi click vào icon user ==========
   let history = useHistory();
+  const [user, setUser] = React.useState<any>({});
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
 
@@ -141,6 +142,15 @@ export default function NavSub() {
             >
               <MenuItem onClick={handleViewMyAccount}>My account</MenuItem>
               <MenuItem onClick={handleUpdateProfile}>Edit profile</MenuItem>
+              {userInfo.role === USER_ROLE.ADMIN && (
+                <MenuItem
+                  onClick={() => {
+                    history.push(PATH_NAME.ADMIN_USER);
+                  }}
+                >
+                  View Dashboard
+                </MenuItem>
+              )}
             </Menu>
             <span className={classes.greeting}>Hello, {userInfo.username}</span>
             <span
