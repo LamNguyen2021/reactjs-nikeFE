@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   IconButton,
   makeStyles,
@@ -12,6 +13,11 @@ import {
 } from "@material-ui/core";
 import CreateIcon from "@material-ui/icons/Create";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { notifiError, notifiSuccess } from "../../../utils/MyToys";
+import userService from "../../../Service/UserService";
+import { useForm } from "react-hook-form";
+import { useAppSelector } from "../../../Hooks/Hook";
+import { RootState } from "../../../Redux/store";
 
 const useRowStyles = makeStyles({
   root: {
@@ -52,8 +58,8 @@ const useRowStyles = makeStyles({
   Detail: {
     width: "100%",
     marginTop: "10px",
-    padding: "18px 14px",
-    fontSize: 18,
+    padding: "12px",
+    fontSize: 14,
   },
   Form: {
     width: 350,
@@ -62,42 +68,91 @@ const useRowStyles = makeStyles({
 
 interface IProps {
   user: any;
+  findUser: Function;
 }
 
-export default function Row({ user }: IProps) {
+export default function Row({ user, findUser }: IProps) {
   const classes = useRowStyles();
-  console.log("user: ", user);
 
-  const [open, setOpen] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [id, setId] = React.useState("");
+  const token = useAppSelector(
+    (state: RootState) => state.credentialsReducer.token
+  );
 
-  const handleClickOpenDialog = () => {
+  //======== Update User =======
+  const handleOpenDialog = (id: string) => {
+    setId(id);
+    const userProfile: any = findUser(id);
+
+    setValue("email", userProfile.email);
+    setValue("name", userProfile.name);
+    setValue("yearOfBirth", userProfile.yearOfBirth);
+    setValue("address", userProfile.address);
+    setValue("statusId", userProfile.status._id);
+    setValue("roleId", userProfile.role._id);
+
     setOpenDialog(true);
   };
-  const handleClose = () => {
+
+  const handleCloseDialog = () => {
+    reset();
     setOpenDialog(false);
   };
 
-  const age = [];
-  for (var i = 0; i < 100; i++) {
-    age.push(i + 1);
-  }
-  const listAge = age.map((item) => (
-    <option key={item} value={item}>
-      {item}
-    </option>
-  ));
+  type FormCreateUserValues = {
+    password: string;
+    email: string;
+    name: string;
+    yearOfBirth: number;
+    address: string;
+    statusId: string;
+    roleId: string;
+  };
 
-  const onSubmit = (data: any) => {};
-  const handleDeleteUser = (data: any) => {};
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+  } = useForm<FormCreateUserValues>();
 
-  const capitalizeFirstLetter = (str: any) => {
-    var splitStr = str.toLowerCase().split(" ");
-    for (var i = 0; i < splitStr.length; i++) {
-      splitStr[i] =
-        splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  const onSubmitEdit = async (data: any) => {
+    try {
+      data = {
+        ...data,
+        yearOfBirth: parseInt(data.yearOfBirth),
+      };
+      const updateUser = await userService.updateUserByID(data, id, token);
+
+      reset();
+      notifiSuccess("Update user profile successfully");
+      handleCloseDialog();
+    } catch (err) {
+      const error = { ...err };
+      notifiError(error.response.data.message);
     }
-    return splitStr.join(" ");
+  };
+
+  //======== Delete User =======
+  const [openConfirm, setOpenConfirm] = React.useState(false);
+  const handleOpenConfirm = (id: string) => {
+    setId(id);
+    setOpenConfirm(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+  };
+  const handleDeleteUser = async (id: string) => {
+    try {
+      await userService.deleteUser(id, token);
+      setOpenConfirm(false);
+      notifiSuccess("Update user profile successfully");
+    } catch (err) {
+      console.log({ ...err });
+    }
   };
 
   return (
@@ -116,74 +171,197 @@ export default function Row({ user }: IProps) {
           <IconButton
             color="primary"
             onClick={() => {
-              setOpenDialog(!openDialog);
+              handleOpenDialog(user._id);
             }}
           >
             <CreateIcon />
           </IconButton>
-          <IconButton color="secondary">
+          <IconButton
+            color="secondary"
+            onClick={() => {
+              handleOpenConfirm(user._id);
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </TableCell>
       </TableRow>
+
+      {/* Update Dialog */}
       <Dialog
         open={openDialog}
-        onClose={handleClose}
+        onClose={handleCloseDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">Update User</DialogTitle>
-        <form className={classes.Form} id="AdminFormDeleteUser">
+        <form
+          className={classes.Form}
+          id="AdminFormEditUser"
+          onSubmit={handleSubmit(onSubmitEdit)}
+        >
           <DialogContent>
-            <p className={classes.inputContainer}>
+            <div className={classes.inputContainer}>
               <div>Email:</div>
               <input
                 type="text"
                 className={classes.Detail}
                 placeholder="Email"
-                name="email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message:
+                      "Please enter a vaid email address. Ex: example@gmail.com",
+                  },
+                })}
               />
-            </p>
-            <p className={classes.inputContainer}>
+              {errors.email && (
+                <p className={classes.inputValid}>{errors.email.message}</p>
+              )}
+            </div>
+            <div className={classes.inputContainer}>
               <div>Password:</div>
               <input
                 type="password"
                 className={classes.Detail}
                 placeholder="Password"
-                name="password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters long",
+                  },
+                })}
               />
-            </p>
-            <p className={classes.inputContainer}>
-              <div>Name:</div>
+              {errors.password && (
+                <p className={classes.inputValid}>{errors.password.message}</p>
+              )}
+            </div>
+            <div className={classes.inputContainer}>
+              <div>Full name:</div>
               <input
                 type="text"
                 className={classes.Detail}
-                placeholder="Name"
-                name="name"
+                placeholder="Full name"
+                {...register("name", {
+                  required: "Fullname is required",
+                })}
               />
-            </p>
-            <p className={classes.inputContainer}>
-              <div>Age:</div>
-              <select className={classes.Detail} name="age">
-                <option value="">Age</option>
-                {listAge}
+              {errors.name && (
+                <p className={classes.inputValid}>{errors.name.message}</p>
+              )}
+            </div>
+            <div className={classes.inputContainer}>
+              <div>Year of Birth:</div>
+              <input
+                type="text"
+                placeholder="Year Of Birth"
+                className={classes.Detail}
+                {...register("yearOfBirth", {
+                  required: "Year of birth is required",
+                  min: {
+                    value: 1940,
+                    message: "year of birth must be greater than 1940",
+                  },
+                  max: {
+                    value: 2003,
+                    message: "year of birth must be less than 2003",
+                  },
+                })}
+              />
+              {errors.yearOfBirth && (
+                <p className={classes.inputValid}>
+                  {errors.yearOfBirth.message}
+                </p>
+              )}
+            </div>
+            <div className={classes.inputContainer}>
+              <div>Address:</div>
+              <input
+                type="text"
+                placeholder="Address"
+                className={classes.Detail}
+                {...register("address", {
+                  required: "Address is required",
+                })}
+              />
+              {errors.address && (
+                <p className={classes.inputValid}>{errors.address.message}</p>
+              )}
+            </div>
+            <div className={classes.inputContainer}>
+              <div>Status:</div>
+              <select
+                {...register("statusId", {
+                  required: "Status is required",
+                })}
+                className={classes.Detail}
+              >
+                <option value="610bf10cdccf125e487e1b4b">Active</option>
+                <option value="610bf113dccf125e487e1b4d">Inactive</option>
               </select>
-            </p>
+              {errors.statusId && (
+                <p className={classes.inputValid}>{errors.statusId.message}</p>
+              )}
+            </div>
+            <div className={classes.inputContainer}>
+              <div>Role:</div>
+              <select
+                {...register("roleId", {
+                  required: "Role is required",
+                })}
+                className={classes.Detail}
+              >
+                <option value="60f32404d29b52428cff51f4">User</option>
+                <option value="60f3239ad29b52428cff51f2">Admin</option>
+              </select>
+              {errors.roleId && (
+                <p className={classes.inputValid}>{errors.roleId.message}</p>
+              )}
+            </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="primary">
+            <Button onClick={handleCloseDialog} color="primary">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              onClick={handleClose}
-              color="primary"
-              autoFocus
-            >
+            <Button color="primary" type="submit">
               Update
             </Button>
           </DialogActions>
         </form>
+      </Dialog>
+
+      {/* Confirm Dialog */}
+      <Dialog
+        open={openConfirm}
+        onClose={handleCloseConfirm}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending
+            anonymous location data to Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm} color="primary">
+            Disagree
+          </Button>
+          <Button
+            color="primary"
+            autoFocus
+            onClick={() => {
+              handleDeleteUser(id);
+            }}
+          >
+            Agree
+          </Button>
+        </DialogActions>
       </Dialog>
     </React.Fragment>
   );
