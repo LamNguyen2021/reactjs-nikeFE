@@ -24,15 +24,22 @@ function DetailProduct() {
   const productDetail = useAppSelector(
     (state: RootState) => state.detailProductReducer.productDetail
   );
+  const [images, setImages] = React.useState({});
+  const handleImages = (images: any) => {
+    setImages(images);
+  };
 
   return (
     <Grid container spacing={2} className={classes.container}>
       <Grid item sm={12} md={8}>
-        <Images />
+        <Images images={images} />
       </Grid>
 
       <Grid item sm={12} md={4}>
-        <MainInfo />
+        <MainInfo
+          productDetail={productDetail}
+          onSubmitImages={(images: any) => handleImages(images)}
+        />
       </Grid>
     </Grid>
   );

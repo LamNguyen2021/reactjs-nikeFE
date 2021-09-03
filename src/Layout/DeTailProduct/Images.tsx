@@ -21,35 +21,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Images() {
+interface IProps {
+  images: any;
+}
+function Images({ images }: IProps) {
   const classes = useStyles();
+  console.log(images);
+  if (Object.keys(images).length === 0) {
+    return <span>loading...</span>;
+  }
 
   return (
     <Grid container className={classes.ProductContainer} spacing={2}>
-      <Grid item xs={6}>
-        <img
-          className={classes.ProductImage}
-          src="https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5/678edbfd-96e6-49fb-9e61-7e96f22971a5/air-force-1-07-shoes-dr1bJC.png"
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <img
-          className={classes.ProductImage}
-          src="https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5,q_80/ad97a5b6-9f06-4102-9db3-38db532d53e4/air-force-1-07-shoes-dr1bJC.png"
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <img
-          className={classes.ProductImage}
-          src="https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5,q_80/c678adbc-3bfb-41c8-8ca2-812f95be7c82/air-force-1-07-shoes-dr1bJC.png"
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <img
-          className={classes.ProductImage}
-          src="https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5,q_80/9e8be758-3521-456c-a1f5-fd904aa69c18/air-force-1-07-shoes-dr1bJC.png"
-        />
-      </Grid>
+      {images.map((item: any) => {
+        return (
+          <Grid item xs={6} key={images._id}>
+            <img className={classes.ProductImage} src={item.urlImage} />
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }
