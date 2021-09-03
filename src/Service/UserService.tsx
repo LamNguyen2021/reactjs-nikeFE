@@ -1,6 +1,6 @@
 import API from "../Config/api";
 import { API_NIKE } from "../Config/url";
-import { Login, SignUp } from "../Model/IUser";
+import { CreateUserProfile, Login, SignUp } from "../Model/IUser";
 
 class UserService {
   logOut = () => {
@@ -41,6 +41,11 @@ class UserService {
 
   updateUserPassword = (updatePassword: any, token: string) => {
     return API("user/updatePassword", "PATCH", updatePassword, token);
+  };
+
+  // create user profile, bên admin, giống signUP. Mốt đổi lại sau, 2 cái này là 1
+  createUserProfile = (user: CreateUserProfile) => {
+    return API("user/createUserProfile", "POST", user, "");
   };
 }
 const userService = new UserService();

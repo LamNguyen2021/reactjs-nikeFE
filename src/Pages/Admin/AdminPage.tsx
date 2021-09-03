@@ -37,8 +37,8 @@ function AdminPage() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          {/* <Users /> */}
-          <Orders />
+          <Users />
+          {/* <Orders /> */}
           {/* <Products /> */}
         </Container>
       </main>

@@ -41,3 +41,12 @@ export interface LoginSocial {
   statusCode: number;
   data: Data;
 }
+
+export interface CreateUserProfile {
+  username: string;
+  password: string;
+  email: string;
+  name: string;
+  yearOfBirth: number;
+  address: string;
+}
