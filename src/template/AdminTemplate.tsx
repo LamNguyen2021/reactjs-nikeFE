@@ -1,9 +1,15 @@
 import React from "react";
 import { Props } from "../Model/IPage";
-import { Route, RouteProps, RouteComponentProps } from "react-router-dom";
+import {
+  Route,
+  RouteProps,
+  RouteComponentProps,
+  Redirect,
+} from "react-router-dom";
 import { Box, Container, CssBaseline, makeStyles } from "@material-ui/core";
 import AdminMenu from "../Layout/Admin/AdminMenu";
-import { ToastContainer } from "react-toastify";
+import userService from "../Service/UserService";
+import { USER_ROLE } from "../Config";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,17 +40,6 @@ const AdminLayout = (props: Props) => {
           {props.children}
           <Box pt={4}>{/* <AdminFooter /> */}</Box>
         </Container>
-        <ToastContainer
-          position="top-right"
-          autoClose={2500}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
       </main>
     </div>
   );
@@ -61,11 +56,16 @@ const AdminTemplate: React.SFC<RouteProps> = ({
     <Route
       {...rest}
       render={(propsComponent: RouteComponentProps<{}>) => {
-        return (
-          <AdminLayout>
-            <Component {...propsComponent} />
-          </AdminLayout>
-        );
+        const user: string = userService.getPerson();
+        if (JSON.parse(user).role === USER_ROLE.ADMIN) {
+          return (
+            <AdminLayout>
+              <Component {...propsComponent} />
+            </AdminLayout>
+          );
+        } else {
+          return <Redirect to="/" />;
+        }
       }}
     />
   );
