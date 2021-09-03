@@ -1,5 +1,7 @@
 import { Grid, makeStyles } from "@material-ui/core";
 import React from "react";
+import { useAppSelector } from "../../Hooks/Hook";
+import { RootState } from "../../Redux/store";
 import productService from "../../Service/ProductService";
 import FilterProducts from "./FilterProducts";
 import ListProducts from "./ListProducts";
@@ -17,6 +19,9 @@ export default function ShowProductsAndFilter() {
   const classes = useStyles();
 
   const [products, setProducts] = React.useState<any>([]);
+  const idcategory = useAppSelector(
+    (state: RootState) => state.categoryReducer.idCategory
+  );
 
   const filter = (name: string, genders: [], colors: [], sizes: []) => {
     let genderQuery = "";
@@ -37,13 +42,20 @@ export default function ShowProductsAndFilter() {
     const query = `name=${name}${genderQuery}${colorQuery}${sizeQuery}`;
 
     productService.getProductFilter(query).then((res) => {
-      setProducts(res.data);
+      if (idcategory === "") {
+        setProducts(res.data);
+      } else {
+        const filteredCate = res.data.filter(
+          (el: any) => el.product.category === idcategory
+        );
+        setProducts(filteredCate);
+      }
     });
   };
 
   React.useEffect(() => {
     filter("", [], [], []);
-  }, []);
+  }, [idcategory]);
 
   return (
     <Grid container className={classes.container}>

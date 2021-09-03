@@ -1,20 +1,18 @@
 import {
   IconButton,
   InputBase,
-  Link,
   List,
   Drawer,
   makeStyles,
   ListItem,
   ListItemText,
 } from "@material-ui/core";
-import React, { Fragment } from "react";
+import React from "react";
 import SearchIcon from "@material-ui/icons/Search";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import MenuIcon from "@material-ui/icons/Menu";
-import NavMenu from "./NavMenu";
 
 const useStyles = makeStyles((theme) => ({
   navFeature: {
