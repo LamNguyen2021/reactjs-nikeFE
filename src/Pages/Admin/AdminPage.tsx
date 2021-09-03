@@ -1,16 +1,6 @@
-import {
-  Container,
-  CssBaseline,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
-import React, { Fragment } from "react";
+import { Container, CssBaseline, makeStyles } from "@material-ui/core";
+import React from "react";
 import AdminMenu from "../../Layout/Admin/AdminMenu";
-import Orders from "../../Layout/Admin/Orders/Orders";
-import Products from "../../Layout/Admin/Products/Products";
-import CreateUser from "../../Layout/Admin/Users/CreateUser";
-import ListUsers from "../../Layout/Admin/Users/ListUsers";
-import Users from "../../Layout/Admin/Users/Users";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +27,7 @@ function AdminPage() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          <Users />
+          {/* <Users /> */}
           {/* <Orders /> */}
           {/* <Products /> */}
         </Container>
