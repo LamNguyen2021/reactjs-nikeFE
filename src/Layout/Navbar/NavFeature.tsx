@@ -13,6 +13,10 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import MenuIcon from "@material-ui/icons/Menu";
+import { PATH_NAME } from "../../Config";
+import { useHistory } from "react-router";
+import { useAppSelector } from "../../Hooks/Hook";
+import { RootState } from "../../Redux/store";
 
 const useStyles = makeStyles((theme) => ({
   navFeature: {
@@ -79,9 +83,17 @@ export default function NavFeature() {
   const classes = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const history = useHistory();
+  const cart = useAppSelector((state: RootState) => state.cartReducer.cart);
 
   const handleMobile = () => {
     setMobile(!mobile);
+  };
+
+  const getTotal = () => {
+    return cart.reduce((sum: number, item: any) => {
+      return (sum += item.quantity);
+    }, 0);
   };
 
   return (
@@ -96,9 +108,14 @@ export default function NavFeature() {
           inputProps={{ "aria-label": "search" }}
         />
       </div>
-      <IconButton className={classes.iconCart}>
+      <IconButton
+        className={classes.iconCart}
+        onClick={() => {
+          history.push(PATH_NAME.CART);
+        }}
+      >
         <ShoppingCartIcon />
-        <span className={classes.sumQuantity}>5</span>
+        <span className={classes.sumQuantity}>{getTotal()}</span>
       </IconButton>
       {isMobile ? (
         <>

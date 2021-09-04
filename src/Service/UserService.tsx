@@ -24,10 +24,6 @@ class UserService {
     return API("auth/login", "POST", user, "");
   };
 
-  signUp = (user: SignUp) => {
-    return API("user", "POST", user, "");
-  };
-
   loginGoogle = (token: any) => {
     return API(`google/${token}`, "GET", "", "");
   };

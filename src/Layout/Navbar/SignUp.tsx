@@ -188,8 +188,6 @@ export default function SignUp(props: Props) {
     name: string;
     yearOfBirth: number;
     address: string;
-    statusId: string;
-    roleId: string;
   };
   const {
     register,
@@ -201,11 +199,9 @@ export default function SignUp(props: Props) {
 
   const onSubmitSignUp = async (data: any) => {
     try {
-      const user = await userService.signUp({
+      const user = await userService.createUserProfile({
         ...data,
         yearOfBirth: parseInt(data.yearOfBirth),
-        statusId: "612b7e849114d43a08e82268",
-        roleId: "6121bf82ef30c0436c5cf8fb",
       });
 
       reset();
@@ -213,8 +209,9 @@ export default function SignUp(props: Props) {
 
       notifiSuccess("Saved user's data into database");
     } catch (err) {
-      const error = { ...err };
-      notifiError(error.response.data.message);
+      // const error = { ...err };
+      // notifiError(error.response.data.message);
+      console.log(err);
     }
   };
 
