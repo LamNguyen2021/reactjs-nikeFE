@@ -10,6 +10,7 @@ import {
   setToken,
   setUserInfo,
 } from "./Layout/Navbar/SignIn/module/reducer/credentialsReducer";
+import { setCart } from "./Layout/Cart/module/cartReducer";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -24,6 +25,13 @@ function App() {
       dispatch(setUserInfo(JSON.parse(person)));
     }
   }, [token, person, dispatch]);
+
+  React.useEffect(() => {
+    if (localStorage.getItem("cart") !== null) {
+      const a: any = localStorage.getItem("cart");
+      dispatch(setCart(JSON.parse(a)));
+    }
+  }, []);
 
   const showHomeLayout = (routesHome: Page[]) => {
     if (routesHome && routesHome.length > 0) {

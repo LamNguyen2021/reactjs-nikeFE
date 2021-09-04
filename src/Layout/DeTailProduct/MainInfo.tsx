@@ -5,6 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import { ISize } from "../../Model/ISize";
 import { Button, ListItem, ListItemText } from "@material-ui/core";
 import productService from "../../Service/ProductService";
+import { notifiError, notifiSuccess } from "../../utils/MyToys";
+import { useAppDispatch } from "../../Hooks/Hook";
+import { useHistory } from "react-router";
+import { addToCart } from "../Cart/module/cartReducer";
 
 const useStyles = makeStyles((theme) => ({
   ProductContainer: {
@@ -115,8 +119,16 @@ const useStyles = makeStyles((theme) => ({
     width: "100px",
     height: "100px",
     borderRadius: "4px",
+    opacity: 0.8,
+    cursor: "pointer",
+  },
+  ProductColorwayImageHideChoosen: {
+    width: "100px",
+    height: "100px",
+    borderRadius: "4px",
     opacity: 1,
     cursor: "pointer",
+    border: "1px solid black",
   },
   CheckSize: {
     boxShadow: "rgb(212, 63, 33) 0px 0px 0px 1px",
@@ -145,14 +157,19 @@ interface IProps {
 
 function MainInfo({ productDetail, onSubmitImages }: IProps) {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+  const history = useHistory();
+
   const [size, setSize] = React.useState<ISize[]>([]);
   const [selectedSize, setSelectedSize] = React.useState<string>("");
+  const [idSize, setIDSize] = React.useState<string>("");
+  const [image, setImage] = React.useState<any>();
+  const [price, setPrice] = React.useState<number | null>(null);
+  const [productDetailChoosen, setProductDetailChoosen] = React.useState<any>();
   const [infoProduct, setInfoProduct] = React.useState<any>({
     name: "",
     details: {},
   });
-
-  console.log("product detail", productDetail);
 
   React.useEffect(() => {
     setInfoProduct({
@@ -160,6 +177,8 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
       details: productDetail[0] && productDetail[0],
     });
     onSubmitImages(productDetail[0] && productDetail[0]?.images);
+    setImage(productDetail[0] && productDetail[0]?.images[0].urlImage);
+    setProductDetailChoosen(productDetail[0] && productDetail[0]);
   }, [productDetail]);
 
   useEffect(() => {
@@ -174,12 +193,47 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
   }, []);
 
   const handleChangeInfo = (item: any) => {
+    setProductDetailChoosen(item);
+    setPrice(null);
     setInfoProduct({ ...infoProduct, details: item });
     onSubmitImages(item.images);
   };
 
-  const handleChooseSize = (size: string) => {
-    setSelectedSize(size);
+  const handleChooseSize = (item: any) => {
+    setSelectedSize(item.nameSize);
+    setIDSize(item._id);
+
+    // set price
+    infoProduct.details.quantities.forEach((el: any) => {
+      if (el.size._id === item._id) {
+        // co size
+        setPrice(el.price);
+      }
+    });
+  };
+
+  const handleCheckout = () => {
+    if (!selectedSize) {
+      notifiError("Please choose size");
+      return;
+    }
+
+    const quantitySize = productDetailChoosen.quantities.find(
+      (item: any) => item.size._id === idSize
+    );
+
+    const product = {
+      quantitySize: quantitySize,
+      image: productDetailChoosen.images[0].urlImage,
+      name: productDetailChoosen.info.product.name,
+      gender: productDetailChoosen.info.gender.nameGender,
+      color: productDetailChoosen.info.color.nameColor,
+      quantities: productDetailChoosen.quantities,
+      quantity: 1,
+      productID: productDetailChoosen.info._id,
+    };
+    dispatch(addToCart(product));
+    notifiSuccess("Add product successfully");
   };
 
   // hiện hình nhỏ
@@ -191,9 +245,14 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
             <img
               alt=""
               src={item.images[0].urlImage}
-              className={classes.ProductColorwayImageHide}
+              className={
+                item.images[0].urlImage !== image
+                  ? classes.ProductColorwayImageHide
+                  : classes.ProductColorwayImageHideChoosen
+              }
               onClick={() => {
                 handleChangeInfo(item);
+                setImage(item.images[0].urlImage);
               }}
             />
           </Grid>
@@ -206,7 +265,7 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
     let flag = false;
     if (infoProduct && infoProduct.details) {
       infoProduct.details.quantities.forEach((el: any) => {
-        if (el.size === item._id) {
+        if (el.size._id === item._id) {
           // co size trong kho
           flag = true;
         }
@@ -227,7 +286,7 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
     let flag = false;
     if (infoProduct && infoProduct.details) {
       infoProduct.details.quantities.forEach((el: any) => {
-        if (el.size === item._id) {
+        if (el.size._id === item._id) {
           // co size trong kho
           flag = true;
         }
@@ -242,11 +301,11 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
     }
   };
 
-  const listSize = size.map((item, index) => (
+  const listSize = size.map((item) => (
     <Grid item xs={4} key={item._id}>
       <Button
         onClick={() => {
-          handleChooseSize(item.nameSize);
+          handleChooseSize(item);
         }}
         className={checkSize(item)}
         disabled={checkIsDisableSize(item)}
@@ -255,6 +314,14 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
       </Button>
     </Grid>
   ));
+
+  const renderPrice = (price: number | null) => {
+    if (price) {
+      return <div className={classes.Price}>${price}</div>;
+    } else {
+      return <span></span>;
+    }
+  };
 
   return (
     <Grid container className={classes.ProductContainer} spacing={2}>
@@ -275,10 +342,10 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
         </div>
       </Grid>
       <Grid item xs={4}>
-        {/* <div className={classes.Price}>$254</div> */}
+        {renderPrice(price)}
       </Grid>
 
-      {/* show images */}
+      {/* show small images */}
       {bindingArr()}
 
       {/* show sizes */}
@@ -294,7 +361,14 @@ function MainInfo({ productDetail, onSubmitImages }: IProps) {
 
       {/* add to bag */}
       <Grid item xs={12}>
-        <button className={classes.AddtoBag}>Add to Bag</button>
+        <button
+          className={classes.AddtoBag}
+          onClick={() => {
+            handleCheckout();
+          }}
+        >
+          Add to Bag
+        </button>
       </Grid>
     </Grid>
   );

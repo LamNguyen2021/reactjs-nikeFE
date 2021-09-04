@@ -1,5 +1,12 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useAppDispatch, useAppSelector } from "../../Hooks/Hook";
+import { RootState } from "../../Redux/store";
+import userService from "../../Service/UserService";
+import { notifiError, notifiSuccess } from "../../utils/MyToys";
+import Paypal from "../../Component/paypal/paypal";
+import cartService from "../../Service/CartService";
+import { setCart } from "./module/cartReducer";
 
 const useStyles = makeStyles((theme) => ({
   Summary: {
@@ -49,25 +56,169 @@ const useStyles = makeStyles((theme) => ({
 
 function CartSummary() {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
+  const cart = useAppSelector((state: RootState) => state.cartReducer.cart);
+  const [checkoutSuccess, setCheckOutSuccess] = React.useState(false);
+
+  const getTotal = () => {
+    return cart.reduce((sum: number, item: any) => {
+      return (sum += item.quantity * item.quantitySize.price);
+    }, 0);
+  };
+
+  const checkout = () => {
+    const user: any = userService.getPerson();
+    if (!user) {
+      notifiError("Please login before checkout");
+      return;
+    }
+    if (cart.length === 0) {
+      notifiError("Please buy product before checkout");
+      return;
+    } else {
+      setCheckOutSuccess(true);
+    }
+  };
+
+  const [listDiscount, setListDiscount] = React.useState<any>([]);
+  const [discountID, setDiscountID] = React.useState<any>();
+  const token = useAppSelector(
+    (state: RootState) => state.credentialsReducer.token
+  );
+
+  React.useEffect(() => {
+    if (token !== "") {
+      const callAPI = async () => {
+        const token = userService.getAccessToken();
+        const res = await cartService.getDiscountUser(token);
+        console.log(res.data);
+        setListDiscount(res.data);
+        if (res.data[0]) {
+          setDiscountID(res.data[0].code._id);
+        } else {
+          setDiscountID("");
+        }
+      };
+      callAPI();
+    }
+  }, [token, checkoutSuccess]);
+
+  const transactionError = (data: any) => {
+    console.log("errror", data);
+    setTimeout(() => {
+      notifiError("Payment fail");
+    }, 2000);
+  };
+
+  const transactionCancel = (data: any) => {
+    console.log("errror", data);
+    notifiError("Cancel Payment");
+  };
+  const transactionSuccess = (payment: any) => {
+    // console.log('The payment was succeeded!', payment.paid);
+    const listDetailProduct: any = [];
+    for (const item of cart) {
+      listDetailProduct.push({
+        idDetailProduct: item.quantitySize.productDetail,
+        quantity: item.quantity,
+        sizeId: item.quantitySize.size._id,
+      });
+    }
+    console.log(listDetailProduct);
+    const data = {
+      idDiscount: discountID,
+      listDetailProduct,
+      isPayment: payment.paid,
+    };
+    const token = userService.getAccessToken();
+    try {
+      const callAPI = async () => {
+        console.log("zo");
+        const res = await cartService.orderCart(token, data);
+        dispatch(setCart([]));
+        localStorage.removeItem("cart");
+        setCheckOutSuccess(false);
+        notifiSuccess("Order success");
+      };
+      callAPI();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const findDiscountByID = () => {
+    if (listDiscount.length > 0) {
+      const discount: any = listDiscount.find((item: any) => {
+        return item.code._id === discountID;
+      });
+      if (!discount) {
+        return 0;
+      }
+      return discount?.code.codeValue;
+    } else {
+      return 0;
+    }
+  };
   return (
     <div className={classes.Summary}>
       <div className={classes.Title}>Summary</div>
       <div className={classes.PriceDetail}>
         Subtotal
-        <div className={classes.Price}>$252</div>
+        <div className={classes.Price}>${getTotal()}</div>
       </div>
-      <div className={classes.PriceDetail}>
-        Estimated Delivery & Handling
-        <div className={classes.Price}>0₫</div>
-      </div>
+      {listDiscount.length > 0 && cart.length > 0 && (
+        <div className={classes.PriceDetail}>
+          Discount
+          <div className={classes.Price}>
+            <select
+              onChange={(event: any) => {
+                console.log(event.target.value);
+                setDiscountID(event.target.value);
+              }}
+            >
+              {listDiscount.map((item: any, index: number) => {
+                return (
+                  <option value={item.code._id}>{item.code.codeValue}%</option>
+                );
+              })}
+            </select>
+          </div>
+        </div>
+      )}
       <div className={classes.TotalPrice}>
         Total
         <div className={classes.Price}>
-          <b>$252</b>
+          <b>${getTotal() - getTotal() * (findDiscountByID() / 100)}</b>
         </div>
       </div>
-      <button className={classes.CheckoutButton}>Checkout</button>
+      {!checkoutSuccess && (
+        <button
+          className={classes.CheckoutButton}
+          onClick={() => {
+            checkout();
+          }}
+        >
+          Checkout
+        </button>
+      )}
+      {checkoutSuccess && (
+        <Paypal
+          sum={getTotal() - getTotal() * (findDiscountByID() / 100)}
+          transactionSuccess={transactionSuccess}
+          transactionCancel={transactionCancel}
+          transactionError={transactionError}
+        />
+      )}
+      {checkoutSuccess && (
+        <button
+          className={classes.CheckoutButton}
+          onClick={() => {
+            setCheckOutSuccess(false);
+          }}
+        >
+          Close
+        </button>
+      )}
     </div>
   );
 }

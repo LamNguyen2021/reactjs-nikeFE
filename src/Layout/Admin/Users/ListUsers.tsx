@@ -89,7 +89,7 @@ export default function ListUsers() {
         setUsers(res.data);
       })
       .catch((err) => {
-        console.log({ ...err });
+        console.log(err);
       });
   }, [token, isChange]);
 

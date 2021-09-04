@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Hook";
 import { RootState } from "../../../Redux/store";
 import { setIsCRUD } from "./module/manageUserReducer";
+import { ID_STATUS, ID_USER } from "../../../Config/id";
 
 const useRowStyles = makeStyles({
   root: {
@@ -133,8 +134,9 @@ export default function Row({ user, findUser }: IProps) {
       notifiSuccess("Update user profile successfully");
       handleCloseDialog();
     } catch (err) {
-      const error = { ...err };
-      notifiError(error.response.data.message);
+      // const error = { ...err };
+      // notifiError(error.response.data.message);
+      console.log(err);
     }
   };
 
@@ -155,7 +157,7 @@ export default function Row({ user, findUser }: IProps) {
       dispatch(setIsCRUD(true));
       notifiSuccess("Delete user successfully");
     } catch (err) {
-      console.log({ ...err });
+      console.log(err);
     }
   };
 
@@ -302,8 +304,8 @@ export default function Row({ user, findUser }: IProps) {
                 })}
                 className={classes.Detail}
               >
-                <option value="612b7e849114d43a08e82268">Active</option>
-                <option value="612b7e8c9114d43a08e8226a">Inactive</option>
+                <option value={`${ID_STATUS.ACTIVE}`}>Active</option>
+                <option value={`${ID_STATUS.INACTIVE}`}>Inactive</option>
               </select>
               {errors.statusId && (
                 <p className={classes.inputValid}>{errors.statusId.message}</p>
@@ -317,8 +319,8 @@ export default function Row({ user, findUser }: IProps) {
                 })}
                 className={classes.Detail}
               >
-                <option value="6121bf82ef30c0436c5cf8fb">User</option>
-                <option value="6121bf7aef30c0436c5cf8f9">Admin</option>
+                <option value={`${ID_USER.USER}`}>User</option>
+                <option value={`${ID_USER.ADMIN}`}>Admin</option>
               </select>
               {errors.roleId && (
                 <p className={classes.inputValid}>{errors.roleId.message}</p>

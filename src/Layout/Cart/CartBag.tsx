@@ -4,6 +4,17 @@ import { withStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import InputBase from "@material-ui/core/InputBase";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import { useAppDispatch, useAppSelector } from "../../Hooks/Hook";
+import { RootState } from "../../Redux/store";
+import {
+  incrementAndDecrease,
+  removeProduct,
+  updateFlag,
+} from "./module/cartReducer";
+import { Button } from "@material-ui/core";
+import { notifiError, notifiSuccess } from "../../utils/MyToys";
 
 const useStyles = makeStyles((theme) => ({
   CartBag: {
@@ -75,6 +86,17 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+  styleButton: {
+    backgroundColor: "black",
+    margin: "0 8px",
+    color: "white",
+    outline: 0,
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "7px",
+    padding: "3px",
+  },
 }));
 
 const CustomSelect = withStyles((theme) => ({
@@ -88,78 +110,105 @@ const CustomSelect = withStyles((theme) => ({
 
 function CartBag() {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
-  const Qty = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const flag = useAppSelector((state: RootState) => state.cartReducer.flag);
+  const cart = useAppSelector((state: RootState) => state.cartReducer.cart);
 
-  // get size when user click
-  const [size, setSize] = React.useState("");
-  const handleChangeSize = (event: any) => {
-    setSize(event.target.value);
+  React.useEffect(() => {
+    if (flag) {
+      notifiError("Run out of product in stock");
+      dispatch(updateFlag(false));
+    }
+  }, [flag, dispatch]);
+
+  const handleAddDelete = (flag: boolean, id: string, idSize: string) => {
+    const data: any = {
+      flag,
+      id,
+      idSize,
+    };
+    dispatch(incrementAndDecrease(data));
   };
-  //get quntity when user click
-  const [quantity, setQuantity] = React.useState("");
-  const handleChangequantity = (event: any) => {
-    setSize(event.target.value);
+
+  const remove = (idProduct: string, idSize: string) => {
+    const data = {
+      idProduct,
+      idSize,
+    };
+    dispatch(removeProduct(data));
+    notifiSuccess("remove successfully");
   };
 
   return (
     <div className={classes.CartBag}>
-      <div className={classes.Product}>
-        <a href="#" className={classes.ProductImageContainer}>
-          <img
-            className={classes.ProductImage}
-            src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/59c0e1dd-d58b-4d0b-a08b-ec9396bee725/air-force-1-shadow-shoe-5DkRBq.jpg"
-          />
-        </a>
-        <div className={classes.ProductDetail}>
-          <a href="#" className={classes.ProductName}>
-            Nike Air Force 1 Shadow
-          </a>
-          <div className={classes.Price}>$252</div>
-          <div className={classes.SubDetail}>
-            <div>Men's Shoes</div>
-            <div className={classes.SelectContainer}>
-              <span className={classes.SelectFormContainer}>
-                Size
-                <FormControl className={classes.SelectFormControl}>
-                  <NativeSelect
-                    value={size}
-                    onChange={handleChangeSize}
-                    input={<CustomSelect />}
+      {cart.length > 0 &&
+        cart.map((item: any) => {
+          return (
+            <div className={classes.Product}>
+              <a href="#" className={classes.ProductImageContainer}>
+                <img alt="" className={classes.ProductImage} src={item.image} />
+              </a>
+              <div className={classes.ProductDetail}>
+                <a href="#" className={classes.ProductName}>
+                  {item.name}
+                </a>
+                <div className={classes.Price}>
+                  ${item.quantity * item.quantitySize.price}
+                </div>
+                <div className={classes.SubDetail}>
+                  <div>
+                    {item.color} - {item.gender}
+                  </div>
+                  <div className={classes.SelectContainer}>
+                    <span className={classes.SelectFormContainer}>
+                      Size: <p>{item.quantitySize.size.nameSize}</p>
+                    </span>
+                    <span className={classes.SelectFormContainer}>
+                      <button
+                        disabled={flag}
+                        className={classes.styleButton}
+                        onClick={() => {
+                          handleAddDelete(
+                            true,
+                            item.productID,
+                            item.quantitySize.size._id
+                          );
+                        }}
+                      >
+                        {" "}
+                        <AddIcon />
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        className={classes.styleButton}
+                        onClick={() => {
+                          handleAddDelete(
+                            false,
+                            item.productID,
+                            item.quantitySize.size._id
+                          );
+                        }}
+                      >
+                        <RemoveIcon />
+                      </button>
+                    </span>
+                  </div>
+                </div>
+                <div className={classes.CartItemAction}>
+                  <span
+                    className={classes.CartItemActionButton}
+                    onClick={() => {
+                      remove(item.productID, item.quantitySize.size._id);
+                    }}
                   >
-                    <option value={36}>36</option>
-                    <option value={37}>37</option>
-                    <option value={38}>38</option>
-                  </NativeSelect>
-                </FormControl>
-              </span>
-              <span className={classes.SelectFormContainer}>
-                Quantity
-                <FormControl className={classes.SelectFormControl}>
-                  <NativeSelect
-                    onChange={handleChangequantity}
-                    input={<CustomSelect />}
-                  >
-                    {Qty.map((i) => {
-                      return (
-                        <option
-                          // selected={item.quantity === i ? "selected" : ""}
-                          value={i}
-                        >
-                          {i}
-                        </option>
-                      );
-                    })}
-                  </NativeSelect>
-                </FormControl>
-              </span>
+                    Remove
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className={classes.CartItemAction}>
-            <span className={classes.CartItemActionButton}>Remove</span>
-          </div>
-        </div>
-      </div>
+          );
+        })}
     </div>
   );
 }
