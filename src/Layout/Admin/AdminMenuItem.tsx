@@ -4,6 +4,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ListAltIcon from "@material-ui/icons/ListAlt";
+import CodeIcon from "@material-ui/icons/Code";
 import { Link } from "react-router-dom";
 import { List } from "@material-ui/core";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
@@ -63,6 +64,17 @@ function AdminMenuItem() {
               <PeopleIcon />
             </ListItemIcon>
             <ListItemText primary="Status" />
+          </ListItem>
+        </Link>
+        <Link
+          to="/admin/codes"
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <ListItem button>
+            <ListItemIcon>
+              <CodeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Code" />
           </ListItem>
         </Link>
       </List>

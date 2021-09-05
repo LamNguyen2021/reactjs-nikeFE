@@ -1,4 +1,5 @@
 import { PATH_NAME } from "../Config";
+import CodePage from "../Layout/Admin/Code/Code";
 import Orders from "../Layout/Admin/Orders/Orders";
 import Products from "../Layout/Admin/Products/Products";
 import Status from "../Layout/Admin/Status/Status";
@@ -23,4 +24,5 @@ export const routesAdmin: Page[] = [
   { path: PATH_NAME.ADMIN_PRODUCT, exact: false, component: Products },
   { path: PATH_NAME.ADMIN_STATUS, exact: false, component: Status },
   { path: PATH_NAME.ADMIN_ORDER, exact: false, component: Orders },
+  { path: PATH_NAME.ADMIN_CODE, exact: false, component: CodePage },
 ];
