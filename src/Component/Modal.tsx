@@ -45,6 +45,7 @@ interface Props {
   title: string;
   contentButton: string;
   nameStatus: string;
+  idStatus;
 }
 
 export default function ModalPopUp({
@@ -53,6 +54,7 @@ export default function ModalPopUp({
   title,
   contentButton,
   nameStatus,
+  idStatus,
 }: Props) {
   const classes = useStyles();
   type FormStatus = {
@@ -68,15 +70,24 @@ export default function ModalPopUp({
   const onSubmitEdit = (data: { nameStatus: string }) => {
     try {
       const token = userService.getAccessToken();
-      const callAPI = async () => {
-        const res = await statusService.createStatus(data, token);
-        closeModal();
-        notifiSuccess("create status successfull");
-      };
-      callAPI();
+      if (contentButton === "Create") {
+        const callAPI = async () => {
+          const res = await statusService.createStatus(data, token);
+          closeModal();
+          notifiSuccess("create status successfully");
+        };
+        callAPI();
+      } else {
+        const callAPI = async () => {
+          const res = await statusService.updateStatus(idStatus, data, token);
+          closeModal();
+          notifiSuccess("update status successfully");
+        };
+        callAPI();
+      }
     } catch (error) {
       // console.log({ ...error });
-      notifiError("create status fail");
+      notifiError("Create/Update status fail");
     }
   };
   React.useEffect(() => {
@@ -84,7 +95,7 @@ export default function ModalPopUp({
     return () => {
       setValue("nameStatus", "");
     };
-  }, [nameStatus, open]);
+  }, [nameStatus, open, idStatus, setValue]);
   return (
     <div>
       <Modal
@@ -115,7 +126,7 @@ export default function ModalPopUp({
                     className={classes.Detail}
                     placeholder="Name Status"
                     {...register("nameStatus", {
-                      required: "Name Status is required",
+                      required: "name status is required",
                     })}
                   />
                   {errors.nameStatus && (

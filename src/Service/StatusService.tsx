@@ -10,6 +10,9 @@ class StatusService {
   deleteStatus = (id: string, token: string) => {
     return API(`status/${id}`, "DELETE", "", token);
   };
+  updateStatus = (id: string, data: any, token: string) => {
+    return API(`status/${id}`, "PATCH", data, token);
+  };
 }
 const statusService = new StatusService();
 export default statusService;
