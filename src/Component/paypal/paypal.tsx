@@ -46,7 +46,7 @@ export default function Paypal({
 
   const client = {
     sandbox:
-      "Adg7Djr0irYmFQq_p03GehgZF_2qebtTAAakAraY8DlFQGmxcZnY7OW8SlnH0R6nMuD3xpQq2bCS30CW",
+      "ATzzHzAGANzoBiwgmOriycdnLBxUt5xpJjV7sIhm1sZHzjfoD65kYY22gPsnYtDA5U01EWCAIYGvIJQd",
     production: "YOUR-PRODUCTION-APP-ID",
   };
   return (

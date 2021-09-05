@@ -3,11 +3,13 @@ import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 export interface Cart {
   cart: [];
   flag: false;
+  isOrderPageChange: boolean;
 }
 
 const initialState = {
   cart: [] as any,
   flag: false,
+  isOrderHistoryChange: false,
 };
 export const cartSlice = createSlice({
   name: "cart",
@@ -69,6 +71,9 @@ export const cartSlice = createSlice({
     updateFlag: (state, { payload }: PayloadAction<boolean>) => {
       state.flag = payload;
     },
+    setIsOrderHistoryChange: (state, payload: PayloadAction<boolean>) => {
+      state.isOrderHistoryChange = !state.isOrderHistoryChange;
+    },
   },
 });
 
@@ -78,5 +83,6 @@ export const {
   incrementAndDecrease,
   removeProduct,
   updateFlag,
+  setIsOrderHistoryChange,
 } = cartSlice.actions;
 export default cartSlice.reducer;

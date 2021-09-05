@@ -194,12 +194,16 @@ export default function SignIn(props: Props) {
   } = useForm<FormSignInValues>();
 
   const responseGoogle = async (response: any) => {
+    console.log("response", response);
+
     //response: thông tin gg trả về: email, fullname, profile, token, ggid...
     const user = await userService.loginGoogle(response.tokenId);
     if (user.data.statusCode === STATUS.REDIRECT) {
       props.getDataLoginGoogle(user.data);
       handleClose();
     } else {
+      console.log("do else");
+
       // status code = 200 -> user đã có trong database
       dispatch(setToken(user.data.access_token));
       dispatch(setIsLogin(true));

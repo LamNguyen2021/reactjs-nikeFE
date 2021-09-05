@@ -88,6 +88,8 @@ export default function NavSub() {
   );
 
   const getDataLoginGoogle = (data: LoginSocial) => {
+    console.log("data login google", data);
+
     // data = {email: "9.4ngoclam@gmail.com", name: "Ngoc Lam Nguyen"},statusCode 308
     setData(data);
   };
@@ -99,6 +101,10 @@ export default function NavSub() {
     dispatch(setToken(""));
     dispatch(setUserInfo({}));
     notifiSuccess("GOOD BYE");
+
+    setTimeout(() => {
+      history.push("/");
+    }, 3000);
   };
 
   //========== xử lý khi click vào icon user ==========
@@ -141,6 +147,9 @@ export default function NavSub() {
               onClose={handleCloseIcon}
             >
               <MenuItem onClick={handleViewMyAccount}>My account</MenuItem>
+              <MenuItem onClick={() => history.push(PATH_NAME.USER_ORDER)}>
+                My orders
+              </MenuItem>
               <MenuItem onClick={handleUpdateProfile}>Edit profile</MenuItem>
               {userInfo.role === USER_ROLE.ADMIN && (
                 <MenuItem
