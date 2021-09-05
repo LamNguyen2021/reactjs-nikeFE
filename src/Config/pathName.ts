@@ -15,4 +15,5 @@ export const PATH_NAME = {
   ADMIN_STATUS: "/admin/status",
   ADMIN_ORDER: "/admin/orders",
   ADMIN_CODE: "/admin/codes",
+  ADMIN_CODE_DETAIL: "/admin/codeDetail",
 };

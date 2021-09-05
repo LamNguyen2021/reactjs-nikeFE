@@ -16,6 +16,12 @@ class CodeService {
   postCodeDetail = (token: string, data: any) => {
     return API(`code-detail`, "POST", data, token);
   };
+  getListCodeDetail = (token: string) => {
+    return API(`code-detail`, "GET", "", token);
+  };
+  updateCodeDetail = (id: string, token: string, data: any) => {
+    return API(`code-detail/${id}`, "PATCH", data, token);
+  };
 }
 
 const codeService = new CodeService();
