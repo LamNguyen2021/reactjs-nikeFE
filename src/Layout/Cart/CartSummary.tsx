@@ -6,7 +6,9 @@ import userService from "../../Service/UserService";
 import { notifiError, notifiSuccess } from "../../utils/MyToys";
 import Paypal from "../../Component/paypal/paypal";
 import cartService from "../../Service/CartService";
-import { setCart } from "./module/cartReducer";
+import { setCart, setIsOrderHistoryChange } from "./module/cartReducer";
+import { useHistory } from "react-router";
+import { PATH_NAME } from "../../Config";
 
 const useStyles = makeStyles((theme) => ({
   Summary: {
@@ -57,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 function CartSummary() {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const history = useHistory();
 
   const cart = useAppSelector((state: RootState) => state.cartReducer.cart);
   const [checkoutSuccess, setCheckOutSuccess] = React.useState(false);
@@ -90,14 +93,20 @@ function CartSummary() {
   React.useEffect(() => {
     if (token !== "") {
       const callAPI = async () => {
-        const token = userService.getAccessToken();
-        const res = await cartService.getDiscountUser(token);
-        console.log(res.data);
-        setListDiscount(res.data);
-        if (res.data[0]) {
-          setDiscountID(res.data[0].code._id);
-        } else {
-          setDiscountID("");
+        try {
+          const token = userService.getAccessToken();
+          const res = await cartService.getDiscountUser(token);
+          setListDiscount(res.data);
+          if (res.data[0]) {
+            setDiscountID(res.data[0].code._id);
+          } else {
+            setDiscountID("");
+          }
+        } catch (err: any) {
+          // const error = { ...err.response.data.message };
+          // console.log(error);
+          // alert(error);
+          notifiError("You do not have permission to access this resource");
         }
       };
       callAPI();
@@ -112,11 +121,11 @@ function CartSummary() {
   };
 
   const transactionCancel = (data: any) => {
-    console.log("errror", data);
+    console.log("cancels", data);
     notifiError("Cancel Payment");
   };
   const transactionSuccess = (payment: any) => {
-    // console.log('The payment was succeeded!', payment.paid);
+    console.log("The payment was succeeded!", payment.paid);
     const listDetailProduct: any = [];
     for (const item of cart) {
       listDetailProduct.push({
@@ -125,16 +134,17 @@ function CartSummary() {
         sizeId: item.quantitySize.size._id,
       });
     }
-    console.log(listDetailProduct);
+    // console.log(listDetailProduct);
     const data = {
       idDiscount: discountID,
       listDetailProduct,
       isPayment: payment.paid,
     };
+    console.log(data);
+
     const token = userService.getAccessToken();
     try {
       const callAPI = async () => {
-        console.log("zo");
         const res = await cartService.orderCart(token, data);
         dispatch(setCart([]));
         localStorage.removeItem("cart");
@@ -142,6 +152,10 @@ function CartSummary() {
         notifiSuccess("Order success");
       };
       callAPI();
+      dispatch(setIsOrderHistoryChange(true));
+      setTimeout(() => {
+        history.push(PATH_NAME.USER_ORDER);
+      }, 3000);
     } catch (error) {
       console.log(error);
     }

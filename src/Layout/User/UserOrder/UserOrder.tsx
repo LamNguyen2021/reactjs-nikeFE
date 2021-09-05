@@ -2,6 +2,12 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import OrderStepper from "./OrderStepper";
 import moment from "moment";
+import cartService from "../../../Service/CartService";
+import userService from "../../../Service/UserService";
+import { notifiError } from "../../../utils/MyToys";
+import Card from "./Card";
+import { useAppSelector } from "../../../Hooks/Hook";
+import { RootState } from "../../../Redux/store";
 
 const useStyles = makeStyles((theme) => ({
   Container: {
@@ -27,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
     outline: 0,
     border: 0,
     textAlign: "left",
-    margin: "15px 0 0 0",
-    width: 700,
+    margin: "15px",
+    width: 680,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
     },
@@ -102,103 +108,45 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UserOrder() {
   const classes = useStyles();
+  const token = userService.getAccessToken();
+  const [listOrder, setListOrder] = React.useState<any>([]);
+  const isChange = useAppSelector(
+    (state: RootState) => state.cartReducer.isOrderHistoryChange
+  );
 
-  const convertDay = (index: any) => {
-    return moment(index).format("llll");
-  };
+  React.useEffect(() => {
+    cartService
+      .orderHistoryMe(token)
+      .then((res) => {
+        setListOrder(res.data);
+      })
+      .catch((err) => {
+        console.log({ ...err });
+      });
+  }, [isChange]);
+
+  const renderProcessingOrder = listOrder.map((order, index) => {
+    if (order.info.status.nameStatus === "pending") {
+      return <Card order={order} index={index} step={0} />;
+    } else if (order.info.status.nameStatus === "delivery") {
+      return <Card order={order} index={index} step={1} />;
+    }
+  });
+
+  const renderDeliveryOrder = listOrder.map((order, index) => {
+    if (order.info.status.nameStatus === "complete")
+      return <Card order={order} index={index} step={2} />;
+  });
 
   return (
     <div className={classes.Container}>
       <div className={classes.Title}>Your Order</div>
 
-      {/* ========== Processing Order ========= */}
-      <div>
-        <div className={classes.OrderType}>Processing Order</div>
-        <div>
-          <button className={classes.Order}>
-            <div className={classes.OrderHeader}>
-              <div className={classes.OrderStatus}>
-                <OrderStepper />
-              </div>
-              <div className={classes.OrderInfo}>ID: 121212</div>
-              <div className={classes.OrderInfo}>
-                Date: Sun, Aug 1, 2021 5:02 PM
-              </div>
-              {/* {item.isPayed == true ?
-                                      <div className={classes.OrderInfo}><b>Payment: Paypal</b></div>
-                                  :
-                                      <div className={classes.OrderInfo}><b>Payment: Ship COD</b></div>
-                                  }
-                                  {item.status == 1 && item.isPayed != true &&
-                                      <div className={classes.OrderCancel} onClick={()=>handleCancel(item._id)}>Cancel Order</div>
-                                  } */}
-              <div className={classes.OrderInfo}>
-                <b>Payment: Paypal</b>
-              </div>
-              <div className={classes.OrderCancel}>Cancel Order</div>
-            </div>
-            <div className={classes.OrderProduct}>
-              <a href="#a" className={classes.ProductImageContainer}>
-                <img
-                  alt=""
-                  className={classes.ProductImage}
-                  src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e0c08734-caa0-4021-97ec-90b6945dfadb/air-force-1-shadow-shoe-klCJXd.jpg"
-                />
-              </a>
-              <div className={classes.ProductDetail}>
-                <a href="#a" className={classes.ProductName}>
-                  Nike Air Force
-                </a>
-                <div className={classes.Price}>$252</div>
-                <div className={classes.SubDetail}>
-                  <div>Size: 39</div>
-                  <div>Qty: 1</div>
-                  <div>Color: black</div>
-                </div>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
+      <div className={classes.OrderType}>Processing Order</div>
+      {renderProcessingOrder}
 
-      {/* ========== Delivered Order ========= */}
-      <div>
-        <div className={classes.OrderType}>Delivered Order</div>
-        <div>
-          <button className={classes.Order}>
-            <div className={classes.OrderHeader}>
-              <div className={classes.OrderStatus}>
-                <OrderStepper />
-              </div>
-              <div className={classes.OrderInfo}>ID: 121212</div>
-              <div className={classes.OrderInfo}>
-                Date: Sun, Aug 1, 2021 5:02 PM
-              </div>
-            </div>
-
-            <div className={classes.OrderProduct}>
-              <a href="#a" className={classes.ProductImageContainer}>
-                <img
-                  alt=""
-                  className={classes.ProductImage}
-                  src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e0c08734-caa0-4021-97ec-90b6945dfadb/air-force-1-shadow-shoe-klCJXd.jpg"
-                />
-              </a>
-              <div className={classes.ProductDetail}>
-                <a href="#a" className={classes.ProductName}>
-                  Nike Air Force
-                </a>
-                <div className={classes.Price}>$252</div>
-                <div className={classes.SubDetail}>
-                  <div>Size: 39</div>
-                  <div>Qty: 1</div>
-                  <div>Color: black</div>
-                </div>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
+      <div className={classes.OrderType}>Delivered Order</div>
+      {renderDeliveryOrder}
     </div>
   );
 }
