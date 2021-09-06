@@ -22,12 +22,19 @@ const useStyles = makeStyles((theme) => ({
       borderBottom: "2px black solid",
     },
   },
+  menuItemClick: {
+    padding: "19px 12px",
+    color: "black",
+    textDecoration: "none",
+    borderBottom: "2px black solid",
+  },
 }));
 
 export default function NavMenu() {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [cate, setCate] = React.useState<ICategory[]>([]);
+  const [numindex, setNumIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     categoryService
@@ -40,21 +47,24 @@ export default function NavMenu() {
       });
   }, []);
 
-  const handleClickCate = (item: ICategory) => {
+  const handleClickCate = (item: ICategory, index: number) => {
+    setNumIndex(index);
     dispatch(setCategory(item._id));
   };
 
   return (
     <Container className={classes.menuList}>
-      {cate.map((item) => {
+      {cate.map((item, index) => {
         return (
           <Link
             href="#"
-            className={classes.menuItem}
+            className={
+              index === numindex ? classes.menuItemClick : classes.menuItem
+            }
             underline="none"
             key={item._id}
             onClick={() => {
-              handleClickCate(item);
+              handleClickCate(item, index);
             }}
           >
             {item.nameCategory}

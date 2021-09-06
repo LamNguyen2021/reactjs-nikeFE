@@ -1,12 +1,12 @@
 import React, { Fragment } from "react";
-import Counter from "../Component/Counter";
 import ShowProductsAndFilter from "./ListProducts/ShowProductsAndFilter";
+import Carousel from "./Carousel/Carousel";
 
 export default function MainLayout() {
   return (
     <Fragment>
-      {/* <Carousel /> */}
-      <ShowProductsAndFilter />
+      <Carousel />
+      {/* <ShowProductsAndFilter /> */}
       {/* <Counter /> */}
     </Fragment>
   );
