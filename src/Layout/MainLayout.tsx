@@ -5,8 +5,8 @@ import Carousel from "./Carousel/Carousel";
 export default function MainLayout() {
   return (
     <Fragment>
-      <Carousel />
-      {/* <ShowProductsAndFilter /> */}
+      {/* <Carousel /> */}
+      <ShowProductsAndFilter />
       {/* <Counter /> */}
     </Fragment>
   );
