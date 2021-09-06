@@ -189,7 +189,6 @@ export default function Orders() {
             title: "Create At",
             field: "createdAt",
             editable: "never",
-            customSort: (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
             render: (rowData) => {
               return <p>{rowData.createdAt}</p>;
             },
