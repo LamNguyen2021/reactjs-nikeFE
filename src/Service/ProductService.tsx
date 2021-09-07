@@ -19,6 +19,23 @@ class ProductService {
   getAllProduct = () => {
     return API("product", "GET", "", this.getAccessToken());
   };
+  createProduct = (body: {
+    name: string;
+    categoryId: string;
+    createDate?: Date;
+  }) => {
+    return API("product", "POST", body, this.getAccessToken());
+  };
+  editProduct = (
+    id: string,
+    body: {
+      name: string;
+      categoryId: string;
+      createDate?: Date;
+    }
+  ) => {
+    return API(`product/${id}`, "PATCH", body, this.getAccessToken());
+  };
 }
 const productService = new ProductService();
 export default productService;

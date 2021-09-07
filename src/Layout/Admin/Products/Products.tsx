@@ -8,6 +8,8 @@ import AddProductForm from "./AddProductForm";
 import EditProductForm from "./EditProductForm";
 import productService from "../../../Service/ProductService";
 import DetailProduct from "./DetailProduct";
+import AddProduct from "./AddProduct";
+import EditProduct from "./EditProduct";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
@@ -23,6 +25,7 @@ export default function Products() {
   // Dialog
   const [open, setOpen] = React.useState(false);
 
+  // edit
   const handleOpen = (rowData: any) => {
     setItemData(rowData);
     setAddNewType(false);
@@ -63,10 +66,12 @@ export default function Products() {
           actions={[
             {
               icon: "edit",
+              tooltip: "edit product",
               onClick: (event, rowData) => handleOpen(rowData),
             },
             {
               icon: "delete",
+              tooltip: "delete all details",
               onClick: (event, rowData) => removeItem(rowData),
             },
           ]}
@@ -110,12 +115,12 @@ export default function Products() {
           TransitionComponent={Transition}
         >
           {addNewType ? (
-            <AddProductForm
+            <AddProduct
               handleCloseAddNew={handleCloseAddNew}
               closeDialog={handleClose}
             />
           ) : (
-            <EditProductForm itemData={itemData} closeDialog={handleClose} />
+            <EditProduct itemData={itemData} closeDialog={handleClose} />
           )}
         </Dialog>
       </Grid>
