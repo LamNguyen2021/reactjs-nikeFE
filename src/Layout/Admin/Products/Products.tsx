@@ -6,6 +6,8 @@ import AddIcon from "@material-ui/icons/Add";
 import { TransitionProps } from "@material-ui/core/transitions";
 import AddProductForm from "./AddProductForm";
 import EditProductForm from "./EditProductForm";
+import productService from "../../../Service/ProductService";
+import DetailProduct from "./DetailProduct";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
@@ -15,7 +17,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 export default function Products() {
-  const [addNewType, setAddNewType] = React.useState(false);
+  const [addNewType, setAddNewType] = React.useState<boolean>(false);
   const [itemData, setItemData] = React.useState(null);
 
   // Dialog
@@ -43,6 +45,10 @@ export default function Products() {
 
   // delete a product
   const removeItem = async (rowData: any) => {};
+  const [products, setProducts] = React.useState([]);
+  React.useEffect(() => {
+    productService.getAllProduct().then((res) => setProducts(res.data));
+  }, []);
 
   return (
     <Grid container spacing={3}>
@@ -50,47 +56,10 @@ export default function Products() {
         <MaterialTable
           title="List Products"
           columns={[
-            {
-              title: "Image",
-              field: "img",
-              render: (rowData) => (
-                <img
-                  src="https://static.nike.com/a/images/t_PDP_144_v1/f_auto/97d7c27d-4d87-4cf4-bbc3-c84d980c4b4b/air-force-1-shadow-shoes-mN8Glx.png"
-                  style={{ width: 50 }}
-                />
-              ),
-            },
             { title: "Name", field: "name" },
-            { title: "Type", field: "typeProduct" },
-            { title: "Gender", field: "gender" },
-            { title: "Price", field: "price" },
+            { title: "Category", field: "category.nameCategory" },
           ]}
-          data={[
-            {
-              name: "Air Force",
-              typeProduct: "shoes",
-              gender: "men",
-              price: 252,
-            },
-            {
-              name: "Air Force",
-              typeProduct: "shoes",
-              gender: "men",
-              price: 252,
-            },
-            {
-              name: "Air Force",
-              typeProduct: "shoes",
-              gender: "men",
-              price: 252,
-            },
-            {
-              name: "Air Force",
-              typeProduct: "shoes",
-              gender: "men",
-              price: 252,
-            },
-          ]}
+          data={products}
           actions={[
             {
               icon: "edit",
@@ -105,6 +74,13 @@ export default function Products() {
             actionsColumnIndex: -1,
             pageSize: 10,
           }}
+          detailPanel={[
+            {
+              tooltip: "Show Detail",
+              render: (rowData: any) => <DetailProduct itemData={rowData} />,
+              // rowData ở đây là 1 dòng dữ liệu: object trong products
+            },
+          ]}
           components={{
             Toolbar: (props) => (
               <div className="tableToolbar">
