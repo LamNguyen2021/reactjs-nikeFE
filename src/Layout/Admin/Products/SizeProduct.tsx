@@ -19,6 +19,7 @@ export default function SizeProduct(props: any) {
         actions={[
           {
             icon: "edit",
+            tooltip: "edit",
             onClick: (event, rowData) => {},
           },
         ]}
@@ -41,7 +42,7 @@ export default function SizeProduct(props: any) {
                   color="primary"
                   startIcon={<AddIcon />}
                 >
-                  Add new
+                  Add Size
                 </Button>
               </div>
             </div>

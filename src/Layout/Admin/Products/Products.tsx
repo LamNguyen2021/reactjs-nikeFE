@@ -4,8 +4,6 @@ import MaterialTable, { MTableToolbar } from "material-table";
 import { Button, Dialog, Slide } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { TransitionProps } from "@material-ui/core/transitions";
-import AddProductForm from "./AddProductForm";
-import EditProductForm from "./EditProductForm";
 import productService from "../../../Service/ProductService";
 import DetailProduct from "./DetailProduct";
 import AddProduct from "./AddProduct";
@@ -76,8 +74,8 @@ export default function Products() {
             },
           ]}
           options={{
+            paging: false,
             actionsColumnIndex: -1,
-            pageSize: 10,
           }}
           detailPanel={[
             {
