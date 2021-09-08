@@ -8,7 +8,7 @@ import Paypal from "../../Component/paypal/paypal";
 import cartService from "../../Service/CartService";
 import { setCart, setIsOrderHistoryChange } from "./module/cartReducer";
 import { useHistory } from "react-router";
-import { PATH_NAME } from "../../Config";
+import { PATH_NAME, USER_ROLE } from "../../Config";
 
 const useStyles = makeStyles((theme) => ({
   Summary: {
@@ -62,6 +62,9 @@ function CartSummary() {
   const history = useHistory();
 
   const cart = useAppSelector((state: RootState) => state.cartReducer.cart);
+  const userInfo: any = useAppSelector(
+    (state: RootState) => state.credentialsReducer.userInfo
+  );
   const [checkoutSuccess, setCheckOutSuccess] = React.useState(false);
 
   const getTotal = () => {
@@ -72,6 +75,10 @@ function CartSummary() {
 
   const checkout = () => {
     const user: any = userService.getPerson();
+    if (userInfo.role === USER_ROLE.ADMIN) {
+      notifiError("Admin cannot buy product");
+      return;
+    }
     if (!user) {
       notifiError("Please login before checkout");
       return;
