@@ -147,9 +147,13 @@ export default function NavSub() {
               onClose={handleCloseIcon}
             >
               <MenuItem onClick={handleViewMyAccount}>My account</MenuItem>
-              <MenuItem onClick={() => history.push(PATH_NAME.USER_ORDER)}>
-                My orders
-              </MenuItem>
+
+              {userInfo.role === USER_ROLE.USER && (
+                <MenuItem onClick={() => history.push(PATH_NAME.USER_ORDER)}>
+                  My orders
+                </MenuItem>
+              )}
+
               <MenuItem onClick={handleUpdateProfile}>Edit profile</MenuItem>
               {userInfo.role === USER_ROLE.ADMIN && (
                 <MenuItem
