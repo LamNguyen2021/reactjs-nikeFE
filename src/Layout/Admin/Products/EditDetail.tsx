@@ -2,11 +2,7 @@ import {
   AppBar,
   Button,
   Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
   DialogContentText,
-  DialogTitle,
   Fade,
   FormControl,
   FormControlLabel,
@@ -18,13 +14,17 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import ImageTwoToneIcon from "@material-ui/icons/ImageTwoTone";
 import React from "react";
 import API_IMAGE from "../../../Config/api-image";
 import colorService from "../../../Service/ColorService";
 import genderService from "../../../Service/GenderService";
-import productDetailService from "../../../Service/ProductDetailService";
 import sizeService from "../../../Service/SizeService";
+import ImageTwoToneIcon from "@material-ui/icons/ImageTwoTone";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import productDetailService from "../../../Service/ProductDetailService";
 import statusService from "../../../Service/StatusService";
 
 const useStyles = makeStyles((theme) => ({
@@ -48,12 +48,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   image: {
-    margin: "15px 15px",
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "flex-start",
+    margin: "15px 15px",
   },
-
   container: {
     display: "flex",
   },
@@ -74,22 +73,39 @@ interface Quantity {
   sizeId: string;
   price: number;
 }
-export default function AddDetail(props: any) {
+export default function EditDetail(props: any) {
   const classes = useStyles();
 
-  const [selectedStatus, setSelectedStatus] = React.useState("");
-  const [selectedColor, setSelectedColor] = React.useState("");
-  const [selectedGender, setSelectedGender] = React.useState("");
+  const [selectedStatus, setSelectedStatus] = React.useState(
+    props.itemData.info.status._id
+  );
+  const [selectedColor, setSelectedColor] = React.useState(
+    props.itemData.info.color._id
+  );
+  const [selectedGender, setSelectedGender] = React.useState(
+    props.itemData.info.gender._id
+  );
+  const [images, setImages] = React.useState<string[]>(
+    [...props.itemData.images].map((item) => item.urlImage)
+  );
   const [selectedQuantities, setSelectedQuantities] = React.useState<
     Quantity[]
-  >([]);
-  const [images, setImages] = React.useState<string[]>([]);
+  >(
+    [...props.itemData.quantities].map((item) => {
+      return {
+        quantity: item.quantity,
+        sizeId: item.size._id,
+        price: item.price,
+      };
+    })
+  );
 
   //the first loading
-  const [status, setStatus] = React.useState<any[]>([]);
   const [colors, setcolors] = React.useState<any[]>([]);
   const [genders, setgenders] = React.useState<any[]>([]);
-  const [quantities, setQuantities] = React.useState<any[]>([]); //list size
+  const [quantities, setQuantities] = React.useState<any[]>([]);
+  const [status, setStatus] = React.useState<any[]>([]);
+
   React.useEffect(() => {
     colorService.getAllColors().then((res) => {
       setcolors(res.data);
@@ -111,8 +127,7 @@ export default function AddDetail(props: any) {
   }, []);
 
   //handle image
-  const [showImageLoading, setShowImageLoading] =
-    React.useState<boolean>(false);
+  const [showImageLoading, setShowImageLoading] = React.useState(false);
   const handleImage = async (e: any) => {
     let i = 0;
     const length = e.target.files.length;
@@ -126,15 +141,12 @@ export default function AddDetail(props: any) {
         setImages([...images]);
         setShowImageLoading(false);
       } catch (err) {
-        console.log(err);
         // console.log({ ...err });
+        console.log(err);
       }
       ++i;
     } while (i < length);
   };
-
-  console.log("images", images);
-
   //remove image
   const removeImage = (url: string) => {
     images.splice(
@@ -143,24 +155,20 @@ export default function AddDetail(props: any) {
     );
     setImages([...images]);
   };
-
   //Popup
   const [checked, setChecked] = React.useState(false);
-
   //handle quantity
-  const [quantity, setQuantity] = React.useState<number>(1);
-  const [price, setPrice] = React.useState<number>(50);
-  const [sizeId, setSizeId] = React.useState<string>("");
+  const [quantity, setQuantity] = React.useState(1);
+  const [price, setPrice] = React.useState(1);
+  const [sizeId, setSizeId] = React.useState("");
   const handleQuantity = (e: any) => {
     const item = selectedQuantities.find(
       (item) => item.sizeId === e.target.value
     );
     if (item === undefined) {
-      // size mới
       setSizeId(e.target.value);
       setChecked(true);
     } else {
-      // trùng size đã chọn -> xóa đi
       selectedQuantities.splice(selectedQuantities.indexOf(item), 1);
       setSelectedQuantities([...selectedQuantities]);
     }
@@ -170,13 +178,13 @@ export default function AddDetail(props: any) {
     selectedQuantities.push({ quantity, sizeId, price });
     setSelectedQuantities([...selectedQuantities]);
     setChecked(false);
-    setPrice(50);
-    setQuantity(1);
+    setPrice(0);
+    setQuantity(0);
   };
 
   //show quantity & price
   const show = (size: string) => {
-    const quantity = selectedQuantities.find((item) => item.sizeId === size); // sizeId-quantity-price
+    const quantity = selectedQuantities.find((item) => item.sizeId === size);
     if (quantity !== undefined) {
       return (
         <Typography>
@@ -198,7 +206,6 @@ export default function AddDetail(props: any) {
   const [selectedColorValid, setSelectedColorValid] = React.useState(false);
   const [selectedGenderValid, setSelectedGenderValid] = React.useState(false);
   const [selectedStatusValid, setSelectedStatusValid] = React.useState(false);
-
   const checkValid = () => {
     let result = true;
     if (selectedStatus === "") {
@@ -233,13 +240,13 @@ export default function AddDetail(props: any) {
     }
     return result;
   };
-
   // actions btn
   const saveBtn = async () => {
     if (checkValid()) {
       try {
-        const res = await productDetailService.createProductDetail(
-          props.idProduct,
+        console.log(props);
+        const res = await productDetailService.editProductDetail(
+          props.itemData.info._id,
           {
             statusId: selectedStatus,
             colorId: selectedColor,
@@ -354,11 +361,11 @@ export default function AddDetail(props: any) {
       <AppBar className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Add new Detail
+            Edit Detail
           </Typography>
           <Button onClick={props.closeDialog}>Cancel</Button>
           <Button autoFocus color="inherit" onClick={saveBtn}>
-            Add
+            Save
           </Button>
         </Toolbar>
       </AppBar>
@@ -440,7 +447,7 @@ export default function AddDetail(props: any) {
                 />
                 <label htmlFor="contained-button-file">
                   <Button variant="contained" color="primary" component="span">
-                    Upload images
+                    Add images
                   </Button>
                 </label>
               </div>
@@ -456,7 +463,18 @@ export default function AddDetail(props: any) {
                       <Grid item xs={3}>
                         <FormControlLabel
                           value={size._id}
-                          control={<Checkbox color="primary" />}
+                          control={
+                            <Checkbox
+                              checked={
+                                selectedQuantities.find(
+                                  (i) => i.sizeId === size._id
+                                )
+                                  ? true
+                                  : false
+                              }
+                              color="primary"
+                            />
+                          }
                           label={`Size: ${size.nameSize}`}
                           labelPlacement={size.nameSize}
                           onChange={(e: any) => {

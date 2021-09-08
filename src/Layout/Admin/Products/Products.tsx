@@ -1,7 +1,7 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import MaterialTable, { MTableToolbar } from "material-table";
-import { Button, Dialog, Slide } from "@material-ui/core";
+import { Button, Dialog, Slide, CircularProgress } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { TransitionProps } from "@material-ui/core/transitions";
 import productService from "../../../Service/ProductService";
@@ -44,68 +44,79 @@ export default function Products() {
     setOpen(false);
   };
 
+  const [isLoading, setIsLoading] = React.useState(true);
+
   // delete a product
   const removeItem = async (rowData: any) => {};
   const [products, setProducts] = React.useState([]);
   React.useEffect(() => {
     productService.getAllProduct().then((res) => setProducts(res.data));
+    setIsLoading(false);
   }, []);
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <MaterialTable
-          title="List Products"
-          columns={[
-            { title: "Name", field: "name" },
-            { title: "Category", field: "category.nameCategory" },
-          ]}
-          data={products}
-          actions={[
-            {
-              icon: "edit",
-              tooltip: "edit product",
-              onClick: (event, rowData) => handleOpen(rowData),
-            },
-            {
-              icon: "delete",
-              tooltip: "delete all details",
-              onClick: (event, rowData) => removeItem(rowData),
-            },
-          ]}
-          options={{
-            paging: false,
-            actionsColumnIndex: -1,
-          }}
-          detailPanel={[
-            {
-              tooltip: "Show Detail",
-              render: (rowData: any) => <DetailProduct itemData={rowData} />,
-              // rowData ở đây là 1 dòng dữ liệu: object trong products
-            },
-          ]}
-          components={{
-            Toolbar: (props) => (
-              <div className="tableToolbar">
-                <div className="title">
-                  <MTableToolbar {...props} />
+        {isLoading && (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress />
+          </div>
+        )}
+        {!isLoading && (
+          <MaterialTable
+            title="List Products"
+            columns={[
+              { title: "Name", field: "name" },
+              { title: "Category", field: "category.nameCategory" },
+            ]}
+            data={products}
+            actions={[
+              {
+                icon: "edit",
+                tooltip: "edit product",
+                onClick: (event, rowData) => handleOpen(rowData),
+              },
+              // {
+              //   icon: "delete",
+              //   tooltip: "delete all details",
+              //   onClick: (event, rowData) => removeItem(rowData),
+              // },
+            ]}
+            options={{
+              paging: false,
+              actionsColumnIndex: -1,
+            }}
+            detailPanel={[
+              {
+                tooltip: "Show Detail",
+                render: (rowData: any) => <DetailProduct itemData={rowData} />,
+                // rowData ở đây là 1 dòng dữ liệu: object trong products
+              },
+            ]}
+            components={{
+              Toolbar: (props) => (
+                <div className="tableToolbar">
+                  <div className="title">
+                    <MTableToolbar {...props} />
+                  </div>
+                  <div>
+                    <Button
+                      onClick={handleOpenAddNew}
+                      className="addnew"
+                      variant="contained"
+                      size="small"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                    >
+                      Add new
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <Button
-                    onClick={handleOpenAddNew}
-                    className="addnew"
-                    variant="contained"
-                    size="small"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                  >
-                    Add new
-                  </Button>
-                </div>
-              </div>
-            ),
-          }}
-        />
+              ),
+            }}
+          />
+        )}
+
         <Dialog
           fullScreen
           open={open}

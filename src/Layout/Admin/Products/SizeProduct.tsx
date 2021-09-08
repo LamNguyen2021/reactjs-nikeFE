@@ -16,34 +16,23 @@ export default function SizeProduct(props: any) {
           { title: "Price", field: "price" },
         ]}
         data={props.itemData}
-        actions={[
-          {
-            icon: "edit",
-            tooltip: "edit",
-            onClick: (event, rowData) => {},
-          },
-        ]}
+        // actions={[
+        //   {
+        //     icon: "edit",
+        //     tooltip: "edit",
+        //     onClick: (event, rowData) => {},
+        //   },
+        // ]}
         options={{
           actionsColumnIndex: -1,
           pageSize: 10,
+          search: false,
         }}
         components={{
           Toolbar: (props) => (
             <div className="tableToolbar">
               <div className="title">
                 <MTableToolbar {...props} />
-              </div>
-              <div>
-                <Button
-                  onClick={() => {}}
-                  className="addnew"
-                  variant="contained"
-                  size="small"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                >
-                  Add Size
-                </Button>
               </div>
             </div>
           ),
