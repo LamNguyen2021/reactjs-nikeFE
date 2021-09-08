@@ -255,7 +255,7 @@ export default function EditDetail(props: any) {
             imageUrls: images,
           }
         );
-        console.log(res);
+        props.setLoadAgain(!props.loadAgain);
         props.closeDialog();
       } catch (err) {
         // console.log({ ...err });

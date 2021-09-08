@@ -20,17 +20,21 @@ export default function DetailProduct(props: any) {
   const [itemData, setItemData] = React.useState(null);
   const [open, setOpen] = React.useState<boolean>(false);
 
+  //load again
+  const [loadAgain, setLoadAgain] = React.useState(false);
+
   //is loading state
   const [isLoading, setIsLoading] = React.useState(true);
 
   // first loading
   const [details, setDetails] = React.useState([]);
   React.useEffect(() => {
+    setIsLoading(true);
     productDetailService.getProductDetail(props.itemData._id).then((res) => {
       setDetails(res.data);
       setIsLoading(false);
     });
-  }, []);
+  }, [loadAgain]);
 
   const handleOpen = (rowData: any) => {
     setItemData(rowData);
@@ -143,12 +147,19 @@ export default function DetailProduct(props: any) {
       >
         {addNewType ? (
           <AddDetail
+            loadAgain={loadAgain}
+            setLoadAgain={setLoadAgain}
             idProduct={props.itemData._id}
             handleCloseAddNew={handleCloseAddNew}
             closeDialog={handleClose}
           />
         ) : (
-          <EditDetail itemData={itemData} closeDialog={handleClose} />
+          <EditDetail
+            loadAgain={loadAgain}
+            setLoadAgain={setLoadAgain}
+            itemData={itemData}
+            closeDialog={handleClose}
+          />
         )}
       </Dialog>
     </div>

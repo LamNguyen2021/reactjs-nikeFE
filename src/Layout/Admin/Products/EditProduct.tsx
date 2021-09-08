@@ -89,6 +89,7 @@ export default function EditProduct(props: any) {
           categoryId: selectedCategory,
           createDate: date,
         });
+        props.setLoadAgain(!props.loadAgain);
         props.closeDialog();
       } catch (err) {
         // console.log({ ...err });
