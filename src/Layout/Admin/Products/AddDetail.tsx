@@ -101,12 +101,7 @@ export default function AddDetail(props: any) {
       setQuantities(res.data);
     });
     statusService.getAllStatus().then((res) => {
-      setStatus(
-        res.data.filter(
-          (item: any) =>
-            item.nameStatus === "active" || item.nameStatus === "inactive"
-        )
-      );
+      setStatus(res.data.filter((item: any) => item.nameStatus === "active"));
     });
   }, []);
 
@@ -225,9 +220,9 @@ export default function AddDetail(props: any) {
     } else {
       setQuantityNotification(<div></div>);
     }
-    if (images.length < 1) {
+    if (images.length < 4 || images.length > 6) {
       result = false;
-      setImageNotification(<div>- Need at least 1 image</div>);
+      setImageNotification(<div>- Need 4 to 6 images</div>);
     } else {
       setImageNotification(<div></div>);
     }
@@ -270,9 +265,6 @@ export default function AddDetail(props: any) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle style={{ color: "#ffd803" }} id="alert-dialog-title">
-          {"Warning"}
-        </DialogTitle>
         <DialogContent>
           <DialogContentText
             style={{ color: "red" }}
