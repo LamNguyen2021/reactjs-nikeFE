@@ -6,17 +6,7 @@ import { RootState } from "../../../Redux/store";
 import userService from "../../../Service/UserService";
 import { notifiError, notifiSuccess } from "../../../utils/MyToys";
 import { useHistory } from "react-router-dom";
-import {
-  setIsUpdatedUserProfile,
-  setUserProfile,
-} from "../../Navbar/NavSub/module/reducer/userProfileReducer";
-import {
-  setIsLogin,
-  setToken,
-  setUserInfo,
-} from "../../Navbar/SignIn/module/reducer/credentialsReducer";
 import UserChangePassword from "./UserChangePassword";
-import { fetchApiUserProfile } from "../../Navbar/NavSub/module/action/action";
 
 const useStyles = makeStyles((theme) => ({
   Container: {
@@ -129,8 +119,9 @@ export default function UserProfile() {
 
       history.push("/");
     } catch (err) {
-      const error = { ...err };
-      notifiError(error.response.data.message);
+      // const error = { ...err };
+      // notifiError(error.response.data.message);
+      console.log(err);
     }
   };
 
