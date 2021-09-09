@@ -56,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
   Detail: {
     width: "100%",
     marginTop: "10px",
-    padding: "18px 14px",
-    fontSize: 18,
+    padding: "12px",
+    fontSize: 14,
   },
   inputContainer: {
     marginBottom: 18,
@@ -120,7 +120,7 @@ export default function UserChangePassword() {
         history.push("/");
       }
     } catch (err) {
-      console.log({ ...err });
+      console.log(err);
     }
   };
 
