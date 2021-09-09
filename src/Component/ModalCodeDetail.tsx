@@ -139,7 +139,6 @@ export default function ModalCodeDetal({
         notifiSuccess(res.data);
       })
       .catch((err: any) => {
-        console.log({ ...err });
         let str = "";
         for (const item of err.response.data.message) {
           str += item + " ";

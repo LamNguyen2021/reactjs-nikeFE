@@ -143,7 +143,7 @@ function Card({ order, index, step }: IProps) {
         <div className={classes.OrderInfo}>
           <b>Payment: Paypal</b>
         </div>
-        <div className={classes.OrderCancel}>Cancel Order</div>
+        {/* <div className={classes.OrderCancel}>Cancel Order</div> */}
       </div>
       {order.products.map((product) => {
         return (
