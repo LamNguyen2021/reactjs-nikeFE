@@ -194,6 +194,8 @@ export default function SignIn(props: Props) {
   } = useForm<FormSignInValues>();
 
   const responseGoogle = async (response: any) => {
+    console.log("response", response);
+
     //response: thông tin gg trả về: email, fullname, profile, token, ggid...
     const user = await userService.loginGoogle(response.tokenId);
     if (user.data.statusCode === STATUS.REDIRECT) {

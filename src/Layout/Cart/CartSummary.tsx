@@ -142,10 +142,15 @@ function CartSummary() {
       });
     }
     // console.log(listDetailProduct);
+
+    const nextWeek = new Date();
+    nextWeek.setDate(new Date().getDate() + 7);
+
     const data = {
       idDiscount: discountID,
       listDetailProduct,
       isPayment: payment.paid,
+      dateShip: nextWeek,
     };
     console.log(data);
 
