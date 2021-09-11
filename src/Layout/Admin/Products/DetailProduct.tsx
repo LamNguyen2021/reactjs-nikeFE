@@ -59,7 +59,7 @@ export default function DetailProduct(props: any) {
   const deleteProductDetail = async (id: string) => {
     try {
       const res = await productDetailService.deleteProductDetail(id);
-      console.log(res);
+      setLoadAgain(!loadAgain);
     } catch (err) {
       // console.log({ ...err });
       console.log(err);

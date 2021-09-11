@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
   Detail: {
     width: "100%",
     marginTop: "10px",
-    padding: "18px 14px",
-    fontSize: 18,
+    padding: "12px",
+    fontSize: 14,
   },
   inputContainer: {
     marginBottom: 18,
@@ -85,16 +85,16 @@ export default function UserProfile() {
   React.useEffect(() => {
     // dispatch(fetchApiUserProfile(token));
 
-    setValue("username", userProfile.username);
-    setValue("email", userProfile.email);
+    // setValue("username", userProfile.username);
+    // setValue("email", userProfile.email);
     setValue("name", userProfile.name);
     setValue("yearOfBirth", userProfile.yearOfBirth);
     setValue("address", userProfile.address);
   }, [userProfile]);
 
   type FormUpdateValues = {
-    username: string;
-    email: string;
+    // username: string;
+    // email: string;
     name: string;
     yearOfBirth: number;
     address: string;
@@ -109,6 +109,8 @@ export default function UserProfile() {
   } = useForm<FormUpdateValues>();
 
   const onSubmitUpdate = async (data: any) => {
+    console.log(data);
+
     try {
       const updateUserResponse = await userService.updateUserProfile(
         { ...data, yearOfBirth: parseInt(data.yearOfBirth) },
@@ -135,38 +137,42 @@ export default function UserProfile() {
               <div className={classes.inputContainer}>
                 <div>Email:</div>
                 <input
+                  value={userProfile.email}
+                  disabled
                   type="text"
                   placeholder="Email"
                   className={classes.Detail}
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message:
-                        "Please enter a vaid email address. Ex: example@gmail.com",
-                    },
-                  })}
+                  // {...register("email", {
+                  //   required: "Email is required",
+                  //   pattern: {
+                  //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  //     message:
+                  //       "Please enter a vaid email address. Ex: example@gmail.com",
+                  //   },
+                  // })}
                 />
-                {errors.email && (
+                {/* {errors.email && (
                   <p className={classes.inputValid}>{errors.email.message}</p>
-                )}
+                )} */}
               </div>
 
               <div className={classes.inputContainer}>
                 <div>Username:</div>
                 <input
+                  value={userProfile.username}
+                  disabled
                   type="text"
                   className={classes.Detail}
                   placeholder="Name"
-                  {...register("username", {
-                    required: "Username is required",
-                  })}
+                  // {...register("username", {
+                  //   required: "Username is required",
+                  // })}
                 />
-                {errors.username && (
+                {/* {errors.username && (
                   <p className={classes.inputValid}>
                     {errors.username.message}
                   </p>
-                )}
+                )} */}
               </div>
               <div className={classes.inputContainer}>
                 <div>Fullname:</div>

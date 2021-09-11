@@ -202,8 +202,6 @@ export default function SignIn(props: Props) {
       props.getDataLoginGoogle(user.data);
       handleClose();
     } else {
-      console.log("do else");
-
       // status code = 200 -> user đã có trong database
       dispatch(setToken(user.data.access_token));
       dispatch(setIsLogin(true));

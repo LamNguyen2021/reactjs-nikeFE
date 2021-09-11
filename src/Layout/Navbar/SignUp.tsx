@@ -209,9 +209,7 @@ export default function SignUp(props: Props) {
 
       notifiSuccess("Saved user's data into database");
     } catch (err) {
-      // const error = { ...err };
-      // notifiError(error.response.data.message);
-      console.log(err);
+      notifiError("Username or email is existed");
     }
   };
 

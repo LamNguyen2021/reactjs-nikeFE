@@ -145,14 +145,14 @@ export default function CodePage() {
                 <TableCell align="left">{item.codeName}</TableCell>
                 <TableCell align="left">{item.codeValue}</TableCell>
                 <TableCell align="left" style={{ display: "flex" }}>
-                  <StyledButton
+                  {/* <StyledButton
                     style={{ padding: "0px", margin: "0px 10px" }}
                     onClick={() => {
                       removeStatus(item._id);
                     }}
                   >
                     Remove
-                  </StyledButton>
+                  </StyledButton> */}
                   <StyledButton
                     style={{ padding: "0px", margin: "0px 10px" }}
                     onClick={() => {

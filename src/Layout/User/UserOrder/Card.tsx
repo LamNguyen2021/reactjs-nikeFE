@@ -104,6 +104,8 @@ interface IProps {
 function Card({ order, index, step }: IProps) {
   const classes = useStyles();
 
+  console.log("order", order);
+
   const renderDate = (UTCdate: string) => {
     const newDateFormat = new Date(UTCdate).toLocaleDateString("en-GB");
     const newTimeFormat = new Date(UTCdate).toLocaleTimeString("en-GB", {
@@ -135,15 +137,21 @@ function Card({ order, index, step }: IProps) {
         </div>
         <div className={classes.OrderInfo}>ID: {order.info._id}</div>
         <div className={classes.OrderInfo}>
-          Date: {renderDate(order.info.dateOrder)}
+          Date order: {renderDate(order.info.dateOrder)}
+        </div>
+        <div className={classes.OrderInfo}>
+          Date ship: {renderDate(order.info?.dateShip)}
+        </div>
+        <div className={classes.OrderInfo}>
+          Address: {order.info?.user?.address}
         </div>
         <div className={classes.OrderInfo}>
           Total price: <b>${order.info.totalPrice}</b>
         </div>
         <div className={classes.OrderInfo}>
-          <b>Payment: Paypal</b>
+          <b>Payment: Paypal (paid)</b>
         </div>
-        <div className={classes.OrderCancel}>Cancel Order</div>
+        {/* <div className={classes.OrderCancel}>Cancel Order</div> */}
       </div>
       {order.products.map((product) => {
         return (

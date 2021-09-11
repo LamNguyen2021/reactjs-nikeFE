@@ -91,11 +91,6 @@ export default function Orders() {
   if (data) {
     data.map((item) => {
       if (item.orders.length > 0) {
-        // const { orders, ...user } = item;
-        // console.log(orders);
-        // console.log(user);
-        console.log(item);
-
         item.orders.forEach((element) => {
           const oneRow = {
             _id: element.info._id,
@@ -116,10 +111,8 @@ export default function Orders() {
       try {
         const res = await cartService.getAllOrders(token);
         setData(res.data);
-        console.log(data);
-      } catch (error) {
-        // console.log({ ...error });
-        console.log(error);
+      } catch (err) {
+        console.log(err);
       }
     };
     callAPI();
@@ -166,7 +159,6 @@ export default function Orders() {
       setChange(!change);
       notifiSuccess("Update status successfully");
     } catch (err) {
-      // const error = { ...err };
       // notifiError(error.response.data.message);
       console.log(err);
     }

@@ -1,4 +1,4 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, makeStyles, CircularProgress } from "@material-ui/core";
 import React, { Fragment } from "react";
 import ProductComponent from "../../Component/ProductComponent";
 
@@ -68,19 +68,38 @@ const useStyles = makeStyles((theme) => ({
 }));
 interface IProps {
   products: [];
+  isLoading: boolean;
 }
-export default function ListProducts({ products }: IProps) {
+export default function ListProducts({ products, isLoading }: IProps) {
   const classes = useStyles();
-
-  return (
-    <Grid container spacing={2} className={classes.listProductMainContainer}>
-      {products.map((product, index) => {
+  const renderListProduct = () => {
+    if (isLoading) {
+      return (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress />
+        </div>
+      );
+    } else {
+      return products.map((product, index) => {
         return (
           <Grid item xs={6} md={4} key={index}>
             <ProductComponent product={product} />
           </Grid>
         );
-      })}
+      });
+    }
+  };
+
+  return (
+    <Grid container spacing={2} className={classes.listProductMainContainer}>
+      {/* {products.map((product, index) => {
+        return (
+          <Grid item xs={6} md={4} key={index}>
+            <ProductComponent product={product} />
+          </Grid>
+        );
+      })} */}
+      {renderListProduct()}
     </Grid>
   );
 }

@@ -114,6 +114,8 @@ export default function UserOrder() {
     (state: RootState) => state.cartReducer.isOrderHistoryChange
   );
 
+  console.log("list", listOrder);
+
   React.useEffect(() => {
     cartService
       .orderHistoryMe(token)
